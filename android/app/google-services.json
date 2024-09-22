@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "343767235488",
+    "project_id": "findapet-app-56a90",
+    "storage_bucket": "findapet-app-56a90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343767235488:android:f6304e8abb4bf668e182c5",
+        "android_client_info": {
+          "package_name": "com.example.findapet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH7IPLIhn0WGMlxfx65er4beUkrlF_eeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
