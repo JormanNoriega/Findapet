@@ -8,8 +8,9 @@ class LoginPage extends StatelessWidget {
       Get.put(AuthController()); // Obtener el controlador
   final TextEditingController _emailController =
       TextEditingController(); // Controlador para el email
-  final TextEditingController _passwordController =
-      TextEditingController(); // Controlador para la contraseña
+  final TextEditingController _passwordController = TextEditingController();
+
+  LoginPage({super.key}); // Controlador para la contraseña
 
   @override
   Widget build(BuildContext context) {
@@ -20,25 +21,25 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Text(
                 'Login',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               _buildTextField(context, 'Email', _emailController),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildTextField(context, 'Contraseña', _passwordController,
                   obscureText: true),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Obx(() => _authController.isLoading.value
-                  ? Center(
+                  ? const Center(
                       child:
                           CircularProgressIndicator()) // Mostrar el indicador de carga
                   : _buildLoginButton(context)),
-              Spacer(),
+              const Spacer(),
               Center(
                 child: GestureDetector(
                   onTap: () =>
@@ -85,7 +86,7 @@ class LoginPage extends StatelessWidget {
           _authController.login(
               email, password); // Llamar al método de login en el controlador
         },
-        child: Text(
+        child: const Text(
           'Iniciar Sesión',
           style: TextStyle(fontSize: 18),
         ),

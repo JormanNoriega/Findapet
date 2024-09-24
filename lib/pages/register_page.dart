@@ -8,6 +8,8 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  RegisterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,25 +19,25 @@ class RegisterPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Text(
                 'Registro',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               _buildTextField(context, 'Nombre', _nameController),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildTextField(context, 'Email', _emailController),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildTextField(context, 'Contraseña', _passwordController,
                   obscureText: true),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Obx(() => _authController.isLoading.value
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : _buildRegisterButton(context)),
-              Spacer(),
+              const Spacer(),
               Center(
                 child: GestureDetector(
                   onTap: () => Get.back(),
@@ -79,7 +81,7 @@ class RegisterPage extends StatelessWidget {
           String password = _passwordController.text.trim();
           _authController.register(email, password, name);
         },
-        child: Text(
+        child: const Text(
           'Registrarse',
           style: TextStyle(fontSize: 18),
         ),
