@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:343767235488:android:2258fbba2d74654ee182c5",
+        "android_client_info": {
+          "package_name": "com.example.find"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH7IPLIhn0WGMlxfx65er4beUkrlF_eeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:343767235488:android:f6304e8abb4bf668e182c5",
         "android_client_info": {
           "package_name": "com.example.findapet"

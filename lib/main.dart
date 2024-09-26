@@ -3,12 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:findapet/pages/login_page.dart';
+import 'package:findapet/firebase_options.dart';
 
 void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializa Firebase dependiendo de si es web o no
+  /*  // Inicializa Firebase dependiendo de si es web o no
   if (GetPlatform.isWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -21,7 +22,10 @@ void main() async {
     );
   } else {
     await Firebase.initializeApp();
-  }
+  } */
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -38,7 +42,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.yellow,
           brightness: Brightness.light,
         ),
-        useMaterial3: true, 
+        useMaterial3: true,
       ),
       home: LoginPage(),
     );
