@@ -47,6 +47,7 @@ dependencies:
   uuid: 
   path_provider:
   file:
+  country_picker:
 
 dev_dependencies:
   flutter_test:

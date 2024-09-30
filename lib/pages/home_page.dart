@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,8 +19,10 @@ class _HomePageState extends State<HomePage> {
 
   // Lista de las cuatro páginas
   final List<Widget> _pages = [
+    Page1(),
     Page2(),
     Page3(),
+    EditProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -32,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Findapet'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Página 1',
+            label: 'Inicio',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -59,7 +62,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Página 4',
+            label: 'Perfil',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -74,13 +77,24 @@ class _HomePageState extends State<HomePage> {
 
 // Ejemplo de las páginas
 
+class Page1 extends StatelessWidget {
+  const Page1({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Jorman'),
+    );
+  }
+}
+
 class Page2 extends StatelessWidget {
   const Page2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Página 2'),
+      child: Text('David'),
     );
   }
 }
@@ -91,7 +105,7 @@ class Page3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Página 3'),
+      child: Text('Noriega'),
     );
   }
 }
