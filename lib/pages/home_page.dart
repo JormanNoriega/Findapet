@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Findapet'),
+        backgroundColor: const Color(0xFFF0F440),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -83,7 +84,7 @@ class Page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Jorman'),
+      child: Text('Pagina 1'),
     );
   }
 }
@@ -94,7 +95,7 @@ class Page2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('David'),
+      child: Text('Pagina 2'),
     );
   }
 }
@@ -105,7 +106,7 @@ class Page3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Noriega'),
+      child: Text('Pagina 3'),
     );
   }
 }

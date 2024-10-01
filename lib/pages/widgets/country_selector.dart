@@ -16,14 +16,33 @@ class CountrySelector extends StatelessWidget {
     return GestureDetector(
       onTap: () => _showCountryPicker(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3), // Color de la sombra
+              spreadRadius: 2, // Radio de la sombra
+              blurRadius: 2, // Desenfoque de la sombra
+              offset: const Offset(0, 2), // Desplazamiento de la sombra
+            ),
+          ],
         ),
-        child: Text(
-          selectedCountry ?? 'Selecciona tu país',
-          style: const TextStyle(fontSize: 16),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              selectedCountry?.isNotEmpty == true
+                  ? selectedCountry!
+                  : 'Selecciona un país',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFFA7A7A7), // Color #A7A7A7 para el texto
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down, color: Color(0xFFA7A7A7)),
+          ],
         ),
       ),
     );

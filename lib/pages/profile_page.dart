@@ -5,6 +5,8 @@ import '../controllers/auth_controller.dart';
 import '../models/user_model.dart';
 import 'dart:io';
 import './widgets/country_selector.dart';
+import './widgets/custom_buttom.dart'; // Importa el widget de botón personalizado
+import './widgets/custom_text_field.dart'; // Importa el widget de campo de texto personalizado
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -96,43 +98,47 @@ class _EditProfilePageState extends State<EditProfilePage> {
               GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
-                  radius: 60,
+                  radius: 80,
                   backgroundImage: _selectedImage != null
                       ? FileImage(_selectedImage!)
                       : (user.profileImageUrl != null
-                              ? NetworkImage(user.profileImageUrl!)
-                              : const AssetImage('assets/default_profile.png'))
-                          as ImageProvider,
+                          ? NetworkImage(user.profileImageUrl!)
+                          : null), // Si no hay imagen, dejar el fondo vacío
                   child: _selectedImage == null && user.profileImageUrl == null
-                      ? const Icon(Icons.person, size: 60)
+                      ? const Icon(Icons.person,
+                          size:
+                              80) // Mostrar un ícono de persona si no hay imagen
                       : null,
                 ),
               ),
+
               const SizedBox(height: 16),
               // Campo para mostrar el correo electrónico (no editable)
-              TextField(
-                decoration:
-                    const InputDecoration(labelText: 'Correo Electrónico'),
+              CustomTextField(
+                hintText: 'Correo Electrónico',
                 controller: TextEditingController(text: user.email),
-                enabled: false, // No permite edición
+                obscureText: false,
               ),
               const SizedBox(height: 16),
               // Campo de texto para el nombre
-              TextField(
+              CustomTextField(
+                hintText: 'Nombre',
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
+                obscureText: false,
               ),
               const SizedBox(height: 16),
               // Campo de texto para el apellido
-              TextField(
+              CustomTextField(
+                hintText: 'Apellido',
                 controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Apellido'),
+                obscureText: false,
               ),
               const SizedBox(height: 16),
               // Campo de texto para el teléfono
-              TextField(
+              CustomTextField(
+                hintText: 'Teléfono',
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Teléfono'),
+                obscureText: false,
               ),
               const SizedBox(height: 16),
               // Selector de país
@@ -144,10 +150,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   });
                 },
               ),
+
               const SizedBox(height: 16),
-              ElevatedButton(
+              CustomButton(
                 onPressed: _updateProfile,
-                child: const Text('Guardar cambios'),
+                buttonText: 'Guardar cambios',
               ),
             ],
           );

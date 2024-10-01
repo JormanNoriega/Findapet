@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import './widgets/custom_text_field.dart'; // Importa el widget de campo de texto
+import './widgets/custom_buttom.dart'; // Importa el widget de botón
 
 class RegisterPage extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
@@ -27,17 +29,47 @@ class RegisterPage extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 40),
-              _buildTextField(context, 'Nombre', _nameController),
+
+              // Utiliza el widget personalizado CustomTextField
+              CustomTextField(
+                controller: _nameController,
+                hintText: 'Nombre',
+              ),
+
               const SizedBox(height: 20),
-              _buildTextField(context, 'Email', _emailController),
+
+              // Utiliza el widget personalizado CustomTextField para el email
+              CustomTextField(
+                controller: _emailController,
+                hintText: 'Email',
+              ),
+
               const SizedBox(height: 20),
-              _buildTextField(context, 'Contraseña', _passwordController,
-                  obscureText: true),
+
+              // Utiliza el widget personalizado CustomTextField para la contraseña
+              CustomTextField(
+                controller: _passwordController,
+                hintText: 'Contraseña',
+                obscureText: true,
+              ),
+
               const SizedBox(height: 40),
+
+              // Utiliza el widget personalizado CustomLoginButton
               Obx(() => _authController.isLoading.value
                   ? const Center(child: CircularProgressIndicator())
-                  : _buildRegisterButton(context)),
+                  : CustomButton(
+                      onPressed: () {
+                        String name = _nameController.text.trim();
+                        String email = _emailController.text.trim();
+                        String password = _passwordController.text.trim();
+                        _authController.register(email, password, name);
+                      },
+                      buttonText: 'Registrarse',
+                    )),
+
               const Spacer(),
+
               Center(
                 child: GestureDetector(
                   onTap: () => Get.back(),
@@ -50,40 +82,6 @@ class RegisterPage extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      BuildContext context, String hintText, TextEditingController controller,
-      {bool obscureText = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: hintText,
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRegisterButton(BuildContext context) {
-    return Center(
-      child: FilledButton(
-        onPressed: () {
-          String name = _nameController.text.trim();
-          String email = _emailController.text.trim();
-          String password = _passwordController.text.trim();
-          _authController.register(email, password, name);
-        },
-        child: const Text(
-          'Registrarse',
-          style: TextStyle(fontSize: 18),
         ),
       ),
     );
