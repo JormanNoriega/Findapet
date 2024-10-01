@@ -83,7 +83,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         title: const Text('Editar Perfil'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        // Agregar SingleChildScrollView para permitir desplazamiento
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
           UserModel? user = _authController.userModel.value;
@@ -118,6 +119,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 hintText: 'Correo Electrónico',
                 controller: TextEditingController(text: user.email),
                 obscureText: false,
+                readOnly: true,
               ),
               const SizedBox(height: 16),
               // Campo de texto para el nombre
