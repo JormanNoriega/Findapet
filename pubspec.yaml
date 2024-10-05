@@ -70,6 +70,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Add this section for your assets
+  assets:
+    - lib/assets/images/google-48.png
+    - lib/assets/images/facebook-50.png
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

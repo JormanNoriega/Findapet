@@ -9,7 +9,7 @@ void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
-  /*  // Inicializa Firebase dependiendo de si es web o no
+  /*// Inicializa Firebase dependiendo de si es web o no
   if (GetPlatform.isWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(

@@ -80,6 +80,9 @@ class AuthController extends GetxController {
 
     if (email != null && password != null) {
       await login(email, password); // Auto login con credenciales guardadas
+    } else {
+      // Manejo en caso de que el email o password sean nulos
+      Get.snackbar("Error", "No se encontraron credenciales guardadas");
     }
   }
 
