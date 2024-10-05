@@ -1,33 +1,33 @@
-import 'package:findapet/pages/home_page.dart';
-import 'package:findapet/pages/login_page.dart';
+import 'dart:io'; // Para manejo de imágenes
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get_storage/get_storage.dart'; // Importar GetStorage
+import 'package:get_storage/get_storage.dart';
+import '../models/user_model.dart';
 import '../services/firebase_service.dart';
+import '../pages/home_page.dart';
+import '../pages/login_page.dart';
 
 class AuthController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();
-  var isLoading = false.obs; // Observa si se está cargando una operación
-  var user = Rxn<User>(); // Observa el estado del usuario
-  final storage =
-      GetStorage(); // Crear una instancia de GetStorage para almacenar las credenciales
+  var isLoading = false.obs;
+  var userModel = Rxn<UserModel>(); // Observa el estado del UserModel
+  final storage = GetStorage();
 
   @override
   void onInit() {
     super.onInit();
-    _autoLogin(); // Intentar login automático al iniciar
+    _autoLogin(); // Intentar login automático
   }
 
-  // Método para registrar el usuario y guardar datos en Firestore
+  // Registrar usuario
   Future<void> register(String email, String password, String name) async {
     try {
       isLoading.value = true;
-      User? newUser =
+      UserModel? newUser =
           await _firebaseService.registerWithEmail(email, password, name);
       if (newUser != null) {
-        user.value = newUser; // Usuario registrado exitosamente
-        await _saveCredentials(email, password); // Guardar credenciales
-        Get.offAll(() => HomePage()); // Redirigir a la vista principal
+        userModel.value = newUser;
+        await _saveCredentials(email, password);
+        Get.offAll(() => const HomePage());
       } else {
         Get.snackbar("Error", "No se pudo registrar el usuario");
       }
@@ -38,16 +38,16 @@ class AuthController extends GetxController {
     }
   }
 
-  // Método para iniciar sesión
+  // Iniciar sesión
   Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
-      User? loggedInUser =
+      UserModel? loggedInUser =
           await _firebaseService.loginWithEmail(email, password);
       if (loggedInUser != null) {
-        user.value = loggedInUser; // Usuario inició sesión exitosamente
-        await _saveCredentials(email, password); // Guardar credenciales
-        Get.offAll(() => HomePage()); // Redirigir a la vista principal
+        userModel.value = loggedInUser;
+        await _saveCredentials(email, password);
+        Get.offAll(() => const HomePage());
       } else {
         Get.snackbar("Error", "No se pudo iniciar sesión");
       }
@@ -58,16 +58,39 @@ class AuthController extends GetxController {
     }
   }
 
-  // Método para cerrar sesión
+  // Cerrar sesión
   Future<void> signOut() async {
     await _firebaseService.signOut();
-    await _clearCredentials(); // Eliminar credenciales guardadas
-    user.value = null; // Usuario ha cerrado sesión
-    Get.snackbar("Sesión cerrada", "Hasta pronto");
-    Get.offAll(() => LoginPage()); // Redirigir a la vista de login
+    await _clearCredentials();
+    userModel.value = null;
+    Get.offAll(() => LoginPage());
   }
 
-  // Guardar las credenciales de usuario usando GetStorage
+  // Subir imagen de perfil
+  Future<void> uploadProfileImage(File imageFile) async {
+    if (userModel.value != null) {
+      try {
+        isLoading.value = true;
+        String? imageUrl = await _firebaseService.uploadProfileImage(
+            userModel.value!.uid, imageFile);
+        if (imageUrl != null) {
+          await _firebaseService.updateProfileImageUrl(
+              userModel.value!.uid, imageUrl);
+          userModel.value!.profileImageUrl =
+              imageUrl; // Actualizar el modelo localmente
+          Get.snackbar("Éxito", "Imagen de perfil actualizada");
+        } else {
+          Get.snackbar("Error", "No se pudo actualizar la imagen");
+        }
+      } catch (e) {
+        Get.snackbar("Error", "Error al subir la imagen");
+      } finally {
+        isLoading.value = false;
+      }
+    }
+  }
+
+  // Guardar credenciales
   Future<void> _saveCredentials(String email, String password) async {
     storage.write('email', email);
     storage.write('password', password);
@@ -77,15 +100,60 @@ class AuthController extends GetxController {
   Future<void> _autoLogin() async {
     String? email = storage.read('email');
     String? password = storage.read('password');
-
     if (email != null && password != null) {
-      await login(email, password); // Auto login con credenciales guardadas
+      await login(email, password);
     }
   }
 
-  // Eliminar las credenciales guardadas
+  // Limpiar credenciales guardadas
   Future<void> _clearCredentials() async {
     storage.remove('email');
     storage.remove('password');
+  }
+
+// Método para actualizar los datos del perfil del usuario
+  Future<void> updateUserProfile(
+      String lastName, String phone, String country) async {
+    try {
+      String uid = userModel.value!.uid;
+
+      // Llamar al método del servicio para actualizar los datos en Firestore
+      await _firebaseService.updateUserProfile(uid, lastName, phone, country);
+
+      // Crear una nueva instancia de UserModel con los datos actualizados
+      UserModel updatedUser = UserModel(
+        uid: userModel.value!.uid,
+        name: userModel.value!.name, // Mantener el nombre actual
+        lastName: lastName, // Usar el nuevo apellido
+        phone: phone, // Usar el nuevo teléfono
+        country: country, // Usar el nuevo país
+        email: userModel.value!.email, // Mantener el correo electrónico
+        profileImageUrl:
+            userModel.value!.profileImageUrl, // Mantener la imagen de perfil
+      );
+
+      // Actualizar el estado de userModel con la nueva instancia
+      userModel.value = updatedUser;
+    } catch (e) {
+      Get.snackbar("Error", "No se pudieron actualizar los datos del perfil");
+    }
+  }
+
+// Método para actualizar la imagen de perfil
+  Future<void> updateProfileImage(File imageFile) async {
+    try {
+      String uid = userModel.value!.uid;
+      String? imageUrl =
+          await _firebaseService.uploadProfileImage(uid, imageFile);
+
+      if (imageUrl != null) {
+        await _firebaseService.updateProfileImageUrl(uid, imageUrl);
+        userModel.update((user) {
+          user!.profileImageUrl = imageUrl;
+        });
+      }
+    } catch (e) {
+      Get.snackbar("Error", "No se pudo actualizar la imagen de perfil");
+    }
   }
 }

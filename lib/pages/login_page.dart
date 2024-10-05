@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../pages/register_page.dart';
+import './widgets/custom_buttom.dart'; // Importa el widget de campo de texto
+import './widgets/custom_text_field.dart'; // Importa el widget de botón
 
 class LoginPage extends StatelessWidget {
   final AuthController _authController =
@@ -29,17 +31,41 @@ class LoginPage extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 40),
-              _buildTextField(context, 'Email', _emailController),
+
+              // Utiliza el widget personalizado CustomTextField
+              CustomTextField(
+                controller: _emailController,
+                hintText: 'Email',
+              ),
+
               const SizedBox(height: 20),
-              _buildTextField(context, 'Contraseña', _passwordController,
-                  obscureText: true),
+
+              // Utiliza el widget personalizado CustomTextField para la contraseña
+              CustomTextField(
+                controller: _passwordController,
+                hintText: 'Contraseña',
+                obscureText: true,
+              ),
+
               const SizedBox(height: 40),
+
+              // Utiliza el widget personalizado CustomLoginButton
               Obx(() => _authController.isLoading.value
                   ? const Center(
                       child:
                           CircularProgressIndicator()) // Mostrar el indicador de carga
-                  : _buildLoginButton(context)),
+                  : CustomButton(
+                      onPressed: () {
+                        String email = _emailController.text.trim();
+                        String password = _passwordController.text.trim();
+                        _authController.login(email,
+                            password); // Llamar al método de login en el controlador
+                      },
+                      buttonText: 'Iniciar Sesión',
+                    )),
+
               const Spacer(),
+
               Center(
                 child: GestureDetector(
                   onTap: () =>
@@ -53,42 +79,6 @@ class LoginPage extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // Método para construir los campos de texto
-  Widget _buildTextField(
-      BuildContext context, String hintText, TextEditingController controller,
-      {bool obscureText = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: hintText,
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-    );
-  }
-
-  // Método para el botón de inicio de sesión
-  Widget _buildLoginButton(BuildContext context) {
-    return Center(
-      child: FilledButton(
-        onPressed: () {
-          String email = _emailController.text.trim();
-          String password = _passwordController.text.trim();
-          _authController.login(
-              email, password); // Llamar al método de login en el controlador
-        },
-        child: const Text(
-          'Iniciar Sesión',
-          style: TextStyle(fontSize: 18),
         ),
       ),
     );
