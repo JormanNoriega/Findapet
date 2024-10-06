@@ -1,17 +1,18 @@
+import '../../controllers/auth_controller.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/social_buttons.dart';
 import 'package:flutter/material.dart';
+import '../auth_pages/login_page.dart';
+import '../widgets/custom_buttom.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
-import '../pages/register_page.dart';
-import './widgets/custom_buttom.dart'; // Botón personalizado
-import './widgets/custom_text_field.dart'; // Campo de texto personalizado
-import './widgets/social_buttons.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  LoginPage({super.key});
+  RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +35,21 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Texto de "Acceder a su cuenta"
+                // Texto de "Crear una cuenta"
                 const Text(
-                  'Acceder a su cuenta',
+                  'Crear una cuenta',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center, // Centra el texto
+                ),
+                const SizedBox(height: 20),
+
+                // Campo de texto personalizado para nombre
+                CustomTextField(
+                  controller: _nameController,
+                  hintText: 'Nombre',
                 ),
                 const SizedBox(height: 20),
 
@@ -60,25 +68,28 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Botón de inicio de sesión personalizado
+                // Botón de registro personalizado
                 Obx(() => _authController.isLoading.value
                     ? const CircularProgressIndicator()
                     : CustomButton(
                         onPressed: () {
+                          String name = _nameController.text.trim();
                           String email = _emailController.text.trim();
                           String password = _passwordController.text.trim();
-                          _authController.login(email, password);
+                          _authController.register(email, password, name);
                         },
-                        buttonText: 'Iniciar Sesión',
+                        buttonText: 'Registrarse',
                       )),
                 const SizedBox(height: 20),
 
+                // Texto "o inicie sesión con"
                 const Text(
                   'o inicie sesión con',
                   style: TextStyle(
-                    color: const Color(0xFFA7A7A7),
+                    color: Color(0xFFA7A7A7),
                     fontSize: 16.0,
                   ),
+                  textAlign: TextAlign.center, // Centra el texto
                 ),
 
                 const SizedBox(height: 20),
@@ -93,15 +104,15 @@ class LoginPage extends StatelessWidget {
                   },
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
 
-                // Enlace para registro
+                // Enlace para iniciar sesión
                 GestureDetector(
-                  onTap: () => Get.to(RegisterPage()),
+                  onTap: () => Get.to(LoginPage()),
                   child: const Text(
-                    '¿No tiene una cuenta? Regístrese',
+                    '¿Ya tienes cuenta? Inicia sesión',
                     style: TextStyle(
-                      color: const Color(0xFFA7A7A7),
+                      color: Color(0xFFA7A7A7),
                     ),
                   ),
                 ),
