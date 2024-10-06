@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/user_model.dart';
 import '../services/firebase_service.dart';
-import '../pages/home_page.dart';
-import '../pages/login_page.dart';
+import '../pages/main_pages/home_page.dart';
+import '../pages/auth_pages/login_page.dart';
 
 class AuthController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();

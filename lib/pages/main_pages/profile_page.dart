@@ -1,10 +1,10 @@
 import 'package:image_picker/image_picker.dart';
-import '../controllers/auth_controller.dart';
-import './widgets/custom_text_field.dart'; // Importa el widget de campo de texto personalizado
-import './widgets/country_selector.dart';
+import '../../controllers/auth_controller.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/country_selector.dart';
 import 'package:flutter/material.dart';
-import './widgets/custom_buttom.dart'; // Importa el widget de botón personalizado
-import '../models/user_model.dart';
+import '../widgets/custom_buttom.dart';
+import '../../models/user_model.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 
