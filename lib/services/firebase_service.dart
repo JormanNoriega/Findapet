@@ -79,7 +79,7 @@ class FirebaseService {
     }
   }
 
-  // Subir imagen de perfil a Firebase Storage
+  // Subir imagen de perfil a Firebase Storage desde Movil
   Future<String?> uploadProfileImage(String uid, File imageFile) async {
     try {
       Reference storageRef = _storage.ref().child('profileImages').child(uid);

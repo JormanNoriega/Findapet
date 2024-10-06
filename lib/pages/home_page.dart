@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import '../controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import './widgets/bottom_navbar.dart';
@@ -58,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             onPressed: () {
               _scaffoldKey.currentState?.openEndDrawer();
             },

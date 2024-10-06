@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:findapet/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +22,7 @@ class MenuDrawer extends StatelessWidget {
               title: Text('Cerrar'),
               onTap: () {
                 Navigator.pop(context);
-              },
+              },  
             ),
             Divider(), // Línea separadora
             ListTile(
