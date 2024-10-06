@@ -6,6 +6,9 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final bool readOnly;
   final bool enabled;
+  final Widget? suffixIcon; // Agregamos el parámetro suffixIcon
+  final Function(String)? onChanged; // Agregamos el parámetro onChanged
+  final FocusNode? focusNode; // Agregamos el parámetro focusNode
 
   const CustomTextField({
     super.key,
@@ -14,6 +17,9 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.readOnly = false,
     this.enabled = true,
+    this.suffixIcon, // Constructor para suffixIcon
+    this.onChanged, // Constructor para onChanged
+    this.focusNode, // Constructor para focusNode
   });
 
   @override
@@ -24,11 +30,10 @@ class CustomTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color:
-                Colors.grey.withOpacity(0.3), // Color de la sombra con opacidad
-            spreadRadius: 2, // Radio de la sombra
-            blurRadius: 2, // Desenfoque de la sombra
-            offset: const Offset(0, 2), // Desplazamiento de la sombra
+            color: Colors.grey.withOpacity(0.3), // Sombra con opacidad
+            spreadRadius: 2,
+            blurRadius: 2,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -37,15 +42,17 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         readOnly: readOnly,
         enabled: enabled,
+        onChanged: onChanged, // Pasamos el onChanged al TextField
+        focusNode: focusNode, // Asignamos el focusNode al TextField
         decoration: InputDecoration(
           labelText: hintText,
           labelStyle: const TextStyle(
-            color: Color(0xFFA7A7A7), // Color #A7A7A7
+            color: Color(0xFFA7A7A7), // Color del hint
           ),
           filled: true,
-          fillColor:
-              Colors.transparent, // Cambiar a transparente para ver la sombra
-          border: InputBorder.none, // Quitar el borde para usar el contenedor
+          fillColor: Colors.transparent,
+          border: InputBorder.none,
+          suffixIcon: suffixIcon, // Usamos suffixIcon como parámetro opcional
         ),
       ),
     );
