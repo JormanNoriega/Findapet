@@ -101,7 +101,10 @@ class AuthController extends GetxController {
     String? email = storage.read('email');
     String? password = storage.read('password');
     if (email != null && password != null) {
-      await login(email, password);
+      await login(email, password); // Auto login con credenciales guardadas
+    } else {
+      // Manejo en caso de que el email o password sean nulos
+      Get.snackbar("Error", "No se encontraron credenciales guardadas");
     }
   }
 

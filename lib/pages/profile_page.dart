@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/auth_controller.dart';
-import '../models/user_model.dart';
-import 'dart:io';
-import './widgets/country_selector.dart';
-import './widgets/custom_buttom.dart'; // Importa el widget de botón personalizado
 import './widgets/custom_text_field.dart'; // Importa el widget de campo de texto personalizado
+import './widgets/country_selector.dart';
+import 'package:flutter/material.dart';
+import './widgets/custom_buttom.dart'; // Importa el widget de botón personalizado
+import '../models/user_model.dart';
+import 'package:get/get.dart';
+import 'dart:io';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
