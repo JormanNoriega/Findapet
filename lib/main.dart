@@ -8,21 +8,6 @@ import 'package:findapet/firebase_options.dart';
 void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
-
-  /*  // Inicializa Firebase dependiendo de si es web o no
-  if (GetPlatform.isWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyB5uIs6MJ8x0f2kL2YBpcmpB54jG0AWJhg",
-          authDomain: "findapet-app-56a90.firebaseapp.com",
-          projectId: "findapet-app-56a90",
-          storageBucket: "findapet-app-56a90.appspot.com",
-          messagingSenderId: "343767235488",
-          appId: "1:343767235488:web:134164c5703906c5e182c5"),
-    );
-  } else {
-    await Firebase.initializeApp();
-  } */
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
