@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  _goBack(); // Llama al método para regresar a la última página
+                  _goBack();
                 },
               )
             : null,
@@ -80,18 +80,21 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        // Cambiado a IndexedStack para mantener el estado de las páginas
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.only(bottom: 10.0), // Ajuste de separación
+        padding: const EdgeInsets.only(bottom: 10), // Espacio inferior
         child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          backgroundColor: const Color(0xFFF0F440), // Fondo de la barra
-          selectedItemColor: Colors.black, // Color del ítem seleccionado
-          unselectedItemColor:
-              const Color.fromARGB(255, 97, 96, 96), // No seleccionados
-          showUnselectedLabels:
-              true, // Mostrar etiquetas de ítems no seleccionados
-          type: BottomNavigationBarType.fixed, // Íconos no cambian de tamaño
+          currentIndex:
+              _selectedIndex < 4 ? _selectedIndex : 0, // Previene errores
+          backgroundColor: const Color(0xFFF0F440),
+          selectedItemColor: Colors.black,
+          unselectedItemColor: const Color.fromARGB(255, 97, 96, 96),
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
           onTap: changePage,
           items: const [
             BottomNavigationBarItem(
