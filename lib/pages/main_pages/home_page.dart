@@ -20,6 +20,9 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
+  // Pila para almacenar el historial de las páginas visitadas
+  final List<int> _pageHistory = [];
+
   // Lista de las páginas
   final List<Widget> _pages = [
     AdoptionPage(),
@@ -29,9 +32,23 @@ class _HomePageState extends State<HomePage> {
     Page4(),
   ];
 
+  // Cambiar página y almacenar el índice anterior en el historial
   void changePage(int index) {
     setState(() {
+      if (_selectedIndex != index) {
+        _pageHistory.add(_selectedIndex); // Agrega el índice actual a la pila
+      }
       _selectedIndex = index;
+    });
+  }
+
+  // Regresar a la última página visitada (saca el último valor de la pila)
+  void _goBack() {
+    setState(() {
+      if (_pageHistory.isNotEmpty) {
+        _selectedIndex =
+            _pageHistory.removeLast(); // Regresa a la última página en la pila
+      }
     });
   }
 
@@ -45,11 +62,7 @@ class _HomePageState extends State<HomePage> {
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  setState(() {
-                    if (_selectedIndex > 0) {
-                      _selectedIndex--;
-                    }
-                  });
+                  _goBack(); // Llama al método para regresar a la última página
                 },
               )
             : null,

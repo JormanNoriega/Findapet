@@ -1,3 +1,4 @@
+import '../widgets/custom_text_field.dart'; // Importa el CustomTextField
 import 'package:flutter/material.dart';
 import '../widgets/pet_card.dart';
 
@@ -9,9 +10,9 @@ class AdoptionPage extends StatefulWidget {
 }
 
 class _AdoptionPage extends State<AdoptionPage> {
-  bool _isSearching = false; // para controlar el modo de búsqueda
+  bool _isSearching = false; // Para controlar el modo de búsqueda
   TextEditingController _searchController =
-      TextEditingController(); // controller para el input de búsqueda
+      TextEditingController(); // Controller para el input de búsqueda
   FocusNode _searchFocusNode = FocusNode(); // Nodo para manejar el foco
   List<Map<String, String>> _filteredPets = pets; // Lista filtrada de mascotas
 
@@ -25,9 +26,13 @@ class _AdoptionPage extends State<AdoptionPage> {
   // Método para filtrar las mascotas según el texto ingresado
   void _filterPets(String query) {
     setState(() {
-      _filteredPets = pets.where((pet) {
-        return pet['name']!.toLowerCase().contains(query.toLowerCase());
-      }).toList();
+      if (query.isEmpty) {
+        _filteredPets = pets;
+      } else {
+        _filteredPets = pets.where((pet) {
+          return pet['name']!.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
     });
   }
 
@@ -42,26 +47,29 @@ class _AdoptionPage extends State<AdoptionPage> {
             children: [
               Expanded(
                 child: _isSearching
-                    ? TextField(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode, // Asignar el FocusNode
-                        decoration: InputDecoration(
-                          hintText: 'Buscar mascota...',
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                                _isSearching = false;
-                                _filteredPets =
-                                    pets; // Restaurar la lista completa
-                              });
-                            },
-                          ),
-                        ),
-                        onChanged: (query) {
-                          _filterPets(query);
+                    ? CustomTextField(
+                        hintText: 'Buscar mascota...',
+                        controller: _searchController, // Controller
+                        enabled: true,
+                        readOnly: false,
+                        focusNode: _searchFocusNode,
+
+                        onChanged: (value) {
+                          _filterPets(
+                              value); // Llamamos al método para filtrar mascotas
                         },
+                        // Agregamos el botón de "X" para cerrar el campo de búsqueda
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _isSearching = false;
+                              _filteredPets =
+                                  pets; // Restaurar la lista completa
+                            });
+                          },
+                        ),
                       )
                     : Text(
                         'Mascotas que buscan un hogar',
@@ -110,7 +118,7 @@ class _AdoptionPage extends State<AdoptionPage> {
   }
 }
 
-// Lista de mascotas
+// Lista de mascotas, datos de prueb para ver la info
 const List<Map<String, String>> pets = [
   {'name': 'Clara', 'reward': '25000', 'image': 'https://example.com/dog1.jpg'},
   {'name': 'Tonny', 'reward': '20000', 'image': 'https://example.com/dog2.jpg'},
