@@ -44,6 +44,7 @@ class MenuDrawer extends StatelessWidget {
               title: Text('Direcciones'),
               onTap: () {
                 Navigator.pop(context);
+                onPageSelected(4); // Navegar a la página 4 (Direcciones)
                 //logica para moverte a la page de direcciones
               },
             ),
