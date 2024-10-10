@@ -1,4 +1,6 @@
-  abstract class Pet {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+abstract class Pet {
   String id;
   String name;
   String breed;
@@ -22,7 +24,7 @@
 
 //CLASE PARA MASCOTAS PERDIDAS
 class PetLost extends Pet {
-  DateTime lostDate;
+  DateTime? lostDate;
   String location;
 
   PetLost({
@@ -33,9 +35,26 @@ class PetLost extends Pet {
     required super.description,
     required super.imageUrl,
     required super.city,
-    required this.lostDate,
+    this.lostDate,
     required this.location,
   });
+
+  factory PetLost.fromMap(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return PetLost(
+      id: doc.id,
+      name: data['name'] ?? '',
+      breed: data['breed'] ?? '',
+      ownerId: data['ownerId'] ?? '',
+      description: data['description'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+      city: data['city'] ?? '',
+      lostDate: data['lostDate'] != null
+          ? (data['lostDate'] as Timestamp).toDate()
+          : null,
+      location: data['location'] ?? '',
+    );
+  }
 
   @override
   Map<String, dynamic> toMap() {
@@ -46,23 +65,10 @@ class PetLost extends Pet {
       'ownerId': ownerId,
       'description': description,
       'imageUrl': imageUrl,
-      'lostDate': lostDate.toIso8601String(),
+      'city': city,
+      'lostDate': lostDate != null ? Timestamp.fromDate(lostDate!) : null,
       'location': location,
     };
-  }
-
-  factory PetLost.fromMap(Map<String, dynamic> data) {
-    return PetLost(
-      id: data['id'],
-      name: data['name'],
-      breed: data['breed'],
-      ownerId: data['ownerId'],
-      description: data['description'],
-      imageUrl: data['imageUrl'],
-      city: data['city'],
-      lostDate: DateTime.parse(data['lostDate']),
-      location: data['location'],
-    );
   }
 }
 
@@ -98,7 +104,8 @@ class PetAdoption extends Pet {
     };
   }
 
-  factory PetAdoption.fromMap(Map<String, dynamic> data) {
+  factory PetAdoption.fromMap(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return PetAdoption(
       id: data['id'],
       name: data['name'],

@@ -27,7 +27,7 @@ class AuthController extends GetxController {
       if (newUser != null) {
         userModel.value = newUser;
         await _saveCredentials(email, password);
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => HomePage());
       } else {
         Get.snackbar("Error", "No se pudo registrar el usuario");
       }
@@ -47,7 +47,7 @@ class AuthController extends GetxController {
       if (loggedInUser != null) {
         userModel.value = loggedInUser;
         await _saveCredentials(email, password);
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => HomePage());
       } else {
         Get.snackbar("Error", "No se pudo iniciar sesión");
       }

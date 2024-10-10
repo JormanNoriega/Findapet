@@ -14,9 +14,7 @@ class PetlostService {
   // Obtener datos de las mascota perdida
   Stream<List<PetLost>> getPetlostData() {
     return _firestore.collection('petlost').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return PetLost.fromMap(doc.data());
-      }).toList();
+      return snapshot.docs.map((doc) => PetLost.fromMap(doc)).toList();
     });
   }
 
@@ -26,7 +24,7 @@ class PetlostService {
       DocumentSnapshot petDoc =
           await _firestore.collection('petlost').doc(id).get();
       if (petDoc.exists) {
-        return PetLost.fromMap(petDoc.data() as Map<String, dynamic>);
+        return PetLost.fromMap(petDoc);
       }
     } catch (e) {
       print("Error al obtener datos de la mascota perdida: $e");
@@ -118,7 +116,7 @@ class PetlostService {
   }
 
   // Metod para subir imagen segun la plataforma
-  Future<String?> uploadImageForPlataform(
+  Future<String?> uploadImageForPlatform(
       dynamic imageFile, String petId) async {
     if (kIsWeb && imageFile is Uint8List) {
       return await uploadPetLostImageWeb(imageFile, petId);

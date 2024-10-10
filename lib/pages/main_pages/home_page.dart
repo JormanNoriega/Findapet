@@ -1,12 +1,12 @@
+// ignore_for_file: prefer_const_constructors
+import 'package:findapet/pages/main_pages/adoption_page.dart';
+import 'package:findapet/pages/petlost_pages/add_petlost.dart';
+import 'package:findapet/pages/petlost_pages/petlost_page.dart';
 import '../../pages/main_pages/profile_page.dart';
 import '../../controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import '../widgets/menu_drawer.dart';
-import '../main_pages/page2.dart';
-import '../main_pages/page3.dart';
-import '../main_pages/page4.dart';
 import 'package:get/get.dart';
-import 'adoption_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,11 +25,10 @@ class _HomePageState extends State<HomePage> {
 
   // Lista de las páginas
   final List<Widget> _pages = [
+    PetlostPage(),
+    AddPetlost(),
     AdoptionPage(),
-    Page2(),
-    Page3(),
     EditProfilePage(),
-    Page4(),
   ];
 
   // Cambiar página y almacenar el índice anterior en el historial
@@ -85,36 +84,33 @@ class _HomePageState extends State<HomePage> {
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.only(bottom: 10), // Espacio inferior
-        child: BottomNavigationBar(
-          currentIndex:
-              _selectedIndex < 4 ? _selectedIndex : 0, // Previene errores
-          backgroundColor: const Color(0xFFF0F440),
-          selectedItemColor: Colors.black,
-          unselectedItemColor: const Color.fromARGB(255, 97, 96, 96),
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          onTap: changePage,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Inicio',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Buscar',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: 'Notificaciones',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Perfil',
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex:
+            _selectedIndex < 4 ? _selectedIndex : 0, // Previene errores
+        backgroundColor: const Color(0xFFF0F440),
+        selectedItemColor: Colors.black,
+        unselectedItemColor: const Color.fromARGB(255, 97, 96, 96),
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        onTap: changePage,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Buscar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.heat_pump_sharp),
+            label: 'Adoptar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
+        ],
       ),
       endDrawer: MenuDrawer(
         authController: _authController,

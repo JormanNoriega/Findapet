@@ -119,11 +119,4 @@ class _AdoptionPage extends State<AdoptionPage> {
 }
 
 // Lista de mascotas, datos de prueb para ver la info
-const List<Map<String, String>> pets = [
-  {'name': 'Clara', 'reward': '25000', 'image': 'https://example.com/dog1.jpg'},
-  {'name': 'Tonny', 'reward': '20000', 'image': 'https://example.com/dog2.jpg'},
-  {'name': 'Max', 'reward': '10000', 'image': 'https://example.com/dog3.jpg'},
-  {'name': 'Sammi', 'reward': '20000', 'image': 'https://example.com/cat1.jpg'},
-  {'name': 'Nina', 'reward': '15000', 'image': 'https://example.com/cat2.jpg'},
-  {'name': 'Coco', 'reward': '20000', 'image': 'https://example.com/dog4.jpg'},
-];
+const List<Map<String, String>> pets = [];
