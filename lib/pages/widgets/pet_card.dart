@@ -6,7 +6,7 @@ class PetCard extends StatelessWidget {
   final String imageUrl;
 
   PetCard({required this.name, required this.reward, required this.imageUrl});
-
+  
   @override
   Widget build(BuildContext context) {
     return Card(
