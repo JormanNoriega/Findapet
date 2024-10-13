@@ -31,6 +31,18 @@ class PetlostService {
     }
     return null;
   }
+  Future<List<PetLost>> getPetlostDataByOwner(String ownerId) async {
+    try {
+      QuerySnapshot petDocs = await _firestore
+          .collection('petlost')
+          .where('ownerId', isEqualTo: ownerId)
+          .get();
+      return petDocs.docs.map((doc) => PetLost.fromMap(doc)).toList();
+    } catch (e) {
+      print("Error al obtener datos de la mascota perdida: $e");
+    }
+    return [];
+  }
 
   // Guardar datos de la mascota perdida
   Future<void> savePetlostData(PetLost petlost) async {

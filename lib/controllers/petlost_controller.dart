@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:findapet/controllers/auth_controller.dart';
 import 'package:findapet/models/pet_model.dart';
 import 'package:findapet/services/petlost_service.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +15,7 @@ class petlostController extends GetxController {
   var imageFile = Rxn<File>();
   var imageWebFile = Rxn<Uint8List>();
   RxList<PetLost> petlostList = <PetLost>[].obs;
+  RxList<PetLost> petlostListByOwner = <PetLost>[].obs;
   var filteredPetlostList = <PetLost>[].obs;
   var searchQuery = ''.obs;
 
@@ -73,6 +75,7 @@ class petlostController extends GetxController {
           // Guardar el ítem usando el servicio
           await _petlostService.savePetlostData(petLost);
           Get.snackbar('Éxito', 'Publicacion Exitosa');
+          fetchPetLostByOwner();
           fetchPetLost(); // Volver a cargar los ítems después de guardar
         } else {
           Get.snackbar('Error', 'No se pudo subir la imagen');
@@ -87,6 +90,7 @@ class petlostController extends GetxController {
     }
   }
 
+  //Metodo para obtener todos los petLost
   void fetchPetLost() {
     isLoading.value = true;
     _petlostService.getPetlostData().listen((fetchedPetLost) {
@@ -94,6 +98,18 @@ class petlostController extends GetxController {
       petlostList.value = fetchedPetLost;
       applyFilter(); // Asegúrate de que esto no desencadene un rebuild
       isLoading.value = false; // Mueve esto después de aplicar el filtro
+    });
+  }
+
+  //metodo para obtener los petLost por el id del dueño
+  void fetchPetLostByOwner() {
+    isLoading.value = true;
+    String ownerId = Get.find<AuthController>().userModel.value!.uid;
+    _petlostService
+        .getPetlostDataByOwner(ownerId)
+        .then((fetchedPetLostbyOwner) {
+      petlostListByOwner.value = fetchedPetLostbyOwner;
+      isLoading.value = false;
     });
   }
 
@@ -144,12 +160,27 @@ class petlostController extends GetxController {
               imageUrl; // Actualizar la URL de la imagen en el ítem
         }
       }
-      // Actualizar los datos del ítem en Firestore
+      // Actualizar los datos del petlost en Firestore
       await _petlostService.updatePetlostData(petlost);
       Get.snackbar('Éxito', 'Ítem actualizado correctamente');
-      fetchPetLost(); // Volver a cargar los ítems después de actualizar
+      fetchPetLost(); // Volver a cargar los petlost después de actualizar
     } catch (e) {
       Get.snackbar('Error', 'Ocurrió un error al actualizar el ítem');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  //Metodo para eliminar un petLost
+  Future<void> deletePetLost(PetLost petlost) async {
+    try {
+      isLoading.value = true;
+      await _petlostService.deletePetlostData(petlost.id);
+      Get.snackbar('Éxito', 'Ítem eliminado correctamente');
+      fetchPetLost();
+      fetchPetLostByOwner();
+    } catch (e) {
+      Get.snackbar('Error', 'Ocurrió un error al eliminar el ítem');
     } finally {
       isLoading.value = false;
     }

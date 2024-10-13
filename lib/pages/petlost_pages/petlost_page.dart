@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:findapet/controllers/petlost_controller.dart';
-import './add_petlost.dart';
-//import '../widgets/pet_card.dart';
 
 class PetlostPage extends StatelessWidget {
   final petlostController _petlostController = Get.put(petlostController());
@@ -17,15 +15,6 @@ class PetlostPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Mascotas Perdidas'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Get.to(() =>
-                  AddPetlost()); // Navegar a la página de creación de ítems
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -106,7 +95,7 @@ class PetlostPage extends StatelessWidget {
                           ),
                         ),
 
-                        // Detalles del ítem
+                        // Detalles petlost
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
@@ -119,11 +108,11 @@ class PetlostPage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Cantidad: ${petlost.location}'),
+                          child: Text('Raza: ${petlost.breed}'),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Valor: \$${petlost.city}'),
+                          child: Text('Ciudad: ${petlost.city}'),
                         ),
                       ],
                     ),
