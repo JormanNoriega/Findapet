@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:findapet/pages/main_pages/adoption_page.dart';
-import 'package:findapet/pages/petlost_pages/my_petslost.dart';
+import 'package:findapet/pages/petlost_pages/my_petslost_page.dart';
 import 'package:findapet/pages/petlost_pages/petlost_page.dart';
 import '../../pages/main_pages/profile_page.dart';
 import '../../controllers/auth_controller.dart';

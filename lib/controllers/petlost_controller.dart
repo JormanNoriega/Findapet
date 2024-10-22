@@ -12,34 +12,36 @@ class petlostController extends GetxController {
   final PetlostService _petlostService = PetlostService();
 
   var isLoading = false.obs;
-  var imageFile = Rxn<File>();
-  var imageWebFile = Rxn<Uint8List>();
+  var imageFiles = <File>[].obs;
+  var imageWebFiles = <Uint8List>[].obs;
   RxList<PetLost> petlostList = <PetLost>[].obs;
   RxList<PetLost> petlostListByOwner = <PetLost>[].obs;
   var filteredPetlostList = <PetLost>[].obs;
   var searchQuery = ''.obs;
 
   //Metodo para seleccionar imagen
-  Future<void> pickImage(bool fromCamera) async {
+  Future<void> pickPetLostImages(bool fromCamera) async {
     if (kIsWeb) {
       // Seleccionar imagen en Flutter Web usando FilePicker
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
+        allowMultiple: true,
       );
       if (result != null && result.files.first.bytes != null) {
-        imageWebFile.value =
-            result.files.first.bytes; // Guardar imagen para la web
+        imageWebFiles.value = result.files
+            .map((file) => file.bytes!)
+            .toList(); // Guardar imagen para la web
       } else {
         Get.snackbar("Error", "No se seleccionó ninguna imagen");
       }
     } else {
       // Seleccionar imagen en dispositivos móviles usando ImagePicker
       final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-      );
-      if (pickedFile != null) {
-        imageFile.value = File(pickedFile.path); // Guardar la imagen en móviles
+      final pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles.isNotEmpty) {
+        imageFiles.value = pickedFiles
+            .map((file) => File(file.path))
+            .toList(); // Guardar la imagen en móviles
       } else {
         Get.snackbar("Error", "No se seleccionó ninguna imagen");
       }
@@ -47,44 +49,54 @@ class petlostController extends GetxController {
   }
 
   //Metodo para guardar un petLost
-  Future<void> saveNewPetlost(String name, String breed, String ownerId,
-      String description, String city, String lostDate, String location) async {
+  Future<void> saveNewPetlost(
+      String name,
+      String type,
+      String breed,
+      String ownerId,
+      String description,
+      String city,
+      String lostDate,
+      String location) async {
     try {
       isLoading.value = true;
       String id = const Uuid().v4(); // Generar un ID único para la mascota
+      List<String> imageUrls = [];
 
-      if (imageFile.value != null || imageWebFile.value != null) {
-        String? imageUrl = await _petlostService.uploadImageForPlatform(
-          kIsWeb ? imageWebFile.value! : imageFile.value!,
+      //verificar si hay imagenes seleccionadas
+      if (imageFiles.isNotEmpty || imageWebFiles.isNotEmpty) {
+        List<String?> uploadedUrls =
+            await _petlostService.uploadImagesForPlatform(
+          kIsWeb ? imageWebFiles : imageFiles,
           id,
         );
 
-        if (imageUrl != null) {
-          // Crear una instancia de Petlost con todos los datos
-          PetLost petLost = PetLost(
-            id: id,
-            name: name,
-            breed: breed,
-            ownerId: ownerId,
-            description: description,
-            imageUrl: imageUrl,
-            city: city,
-            lostDate: DateTime.parse(lostDate),
-            location: location,
-          );
-          // Guardar el ítem usando el servicio
-          await _petlostService.savePetlostData(petLost);
-          Get.snackbar('Éxito', 'Publicacion Exitosa');
-          fetchPetLostByOwner();
-          fetchPetLost(); // Volver a cargar los ítems después de guardar
-        } else {
-          Get.snackbar('Error', 'No se pudo subir la imagen');
-        }
-      } else {
-        Get.snackbar('Error', 'Debe seleccionar una imagen');
+        // Filtrar URLs no nulas
+        imageUrls =
+            uploadedUrls.where((url) => url != null).cast<String>().toList();
       }
+
+      // Crear una instancia de PetLost con todos los datos
+      PetLost petLost = PetLost(
+        id: id,
+        name: name,
+        type: type,
+        breed: breed,
+        ownerId: ownerId,
+        description: description,
+        imageUrls: imageUrls,
+        city: city,
+        lostDate: DateTime.parse(lostDate),
+        location: location,
+      );
+
+      // Guardar el ítem usando el servicio
+      await _petlostService.savePetlostData(petLost);
+      Get.snackbar('Éxito', 'Publicacion Exitosa');
+      fetchPetLostByOwner();
+      fetchPetLost(); // Volver a cargar los ítems después de guardar
     } catch (e) {
-      Get.snackbar('Error', 'Ocurrió un error al Hacer una publicacion');
+      Get.snackbar('Error', 'No se pudo guardar la publicación');
     } finally {
       isLoading.value = false;
     }
@@ -148,17 +160,17 @@ class petlostController extends GetxController {
   Future<void> updatePetLost(PetLost petlost) async {
     try {
       isLoading.value = true;
-      // Si hay una nueva imagen seleccionada, actualizar la imagen
-      String? imageUrl;
-      if (imageFile.value != null || imageWebFile.value != null) {
-        imageUrl = await _petlostService.uploadImageForPlatform(
-          kIsWeb ? imageWebFile.value! : imageFile.value!,
+      List<String> imageUrls = List.from(petlost.imageUrls);
+      // Verificar si hay nuevas imágenes seleccionadas
+      if (imageFiles.isNotEmpty || imageWebFiles.isNotEmpty) {
+        List<String?> uploadedUrls =
+            await _petlostService.uploadImagesForPlatform(
+          kIsWeb ? imageWebFiles : imageFiles,
           petlost.id,
         );
-        if (imageUrl != null) {
-          petlost.imageUrl =
-              imageUrl; // Actualizar la URL de la imagen en el ítem
-        }
+        // Filtrar URLs no nulas y añadirlas a las URLs existentes
+        imageUrls.addAll(
+            uploadedUrls.where((url) => url != null).cast<String>().toList());
       }
       // Actualizar los datos del petlost en Firestore
       await _petlostService.updatePetlostData(petlost);

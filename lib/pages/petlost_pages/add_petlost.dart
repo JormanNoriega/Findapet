@@ -20,6 +20,7 @@ class _AddPetlostState extends State<AddPetlost> {
   final petlostController _petlostController = Get.find();
   final AuthController _authController = Get.find();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _typeController = TextEditingController();
   final TextEditingController _breedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -41,14 +42,15 @@ class _AddPetlostState extends State<AddPetlost> {
 
   void _loadPetData() {
     _nameController.text = currentPetlost!.name;
+    _typeController.text = currentPetlost!.type;
     _breedController.text = currentPetlost!.breed;
     _descriptionController.text = currentPetlost!.description;
     _locationController.text = currentPetlost!.location;
     _cityController.text = currentPetlost!.city;
     selectedDate = currentPetlost!.lostDate;
 
-    if (currentPetlost!.imageUrl.isNotEmpty) {
-      _petlostController.imageFile.value = null;
+    if (currentPetlost!.imageUrls.isNotEmpty) {
+      _petlostController.imageFiles.value = [];
     }
   }
 
@@ -63,7 +65,7 @@ class _AddPetlostState extends State<AddPetlost> {
               leading: Icon(Icons.camera_alt),
               title: Text('Cámara'),
               onTap: () {
-                _petlostController.pickImage(true);
+                _petlostController.pickPetLostImages(true);
                 Get.back();
               },
             ),
@@ -71,7 +73,7 @@ class _AddPetlostState extends State<AddPetlost> {
               leading: Icon(Icons.photo_library),
               title: Text('Galería'),
               onTap: () {
-                _petlostController.pickImage(false);
+                _petlostController.pickPetLostImages(false);
                 Get.back();
               },
             ),
@@ -113,31 +115,67 @@ class _AddPetlostState extends State<AddPetlost> {
               GestureDetector(
                 onTap: () => _showImagePicker(context),
                 child: Obx(() {
-                  // Mostrar imagen seleccionada (para web y móvil)
-                  if (_petlostController.imageFile.value != null) {
-                    // Mostrar imagen seleccionada en móviles (File)
-                    return Image.file(
-                      _petlostController.imageFile.value!,
+                  // Verificar si hay imágenes seleccionadas
+                  if (_petlostController.imageFiles.isNotEmpty) {
+                    // Mostrar múltiples imágenes seleccionadas en móviles (File)
+                    return SizedBox(
                       height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _petlostController.imageFiles.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.file(
+                              _petlostController.imageFiles[index],
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                      ),
                     );
-                  } else if (_petlostController.imageWebFile.value != null) {
-                    // Mostrar imagen seleccionada en web (Uint8List)
-                    return Image.memory(
-                      _petlostController.imageWebFile.value!,
+                  } else if (_petlostController.imageWebFiles.isNotEmpty) {
+                    // Mostrar múltiples imágenes seleccionadas en web (Uint8List)
+                    return SizedBox(
                       height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _petlostController.imageWebFiles.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.memory(
+                              _petlostController.imageWebFiles[index],
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                      ),
                     );
                   } else if (currentPetlost != null &&
-                      currentPetlost!.imageUrl.isNotEmpty) {
-                    // Mostrar imagen existente si estamos editando
-                    return Image.network(
-                      currentPetlost!.imageUrl,
+                      currentPetlost!.imageUrls.isNotEmpty) {
+                    // Mostrar imágenes existentes si estamos editando
+                    return SizedBox(
                       height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: currentPetlost!.imageUrls.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.network(
+                              currentPetlost!.imageUrls[index],
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                      ),
                     );
                   } else {
                     // Mostrar el contenedor para seleccionar una imagen
@@ -189,6 +227,7 @@ class _AddPetlostState extends State<AddPetlost> {
                           final description = _descriptionController.text;
                           final location = _locationController.text;
                           final city = _cityController.text;
+                          final type = _typeController.text;
 
                           if (selectedDate == null) {
                             Get.snackbar('Error',
@@ -201,6 +240,7 @@ class _AddPetlostState extends State<AddPetlost> {
                           if (currentPetlost == null) {
                             _petlostController.saveNewPetlost(
                               name,
+                              type,
                               breed,
                               ownerId,
                               description,

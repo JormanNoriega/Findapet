@@ -59,9 +59,10 @@ class MyPetsLostPage extends StatelessWidget {
                     // Imagen de la mascota
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: pet.imageUrl.isNotEmpty
+                      child: (pet.imageUrls.isNotEmpty &&
+                              pet.imageUrls.first.isNotEmpty)
                           ? Image.network(
-                              pet.imageUrl,
+                              pet.imageUrls.first,
                               height: 90,
                               width: 90,
                               fit: BoxFit.cover,

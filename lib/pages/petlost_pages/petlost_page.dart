@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:findapet/pages/petlost_pages/petlost_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:findapet/controllers/petlost_controller.dart';
@@ -51,70 +52,80 @@ class PetlostPage extends StatelessWidget {
                 itemCount: _petlostController.filteredPetlostList.length,
                 itemBuilder: (context, index) {
                   final petlost = _petlostController.filteredPetlostList[index];
-
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Imagen del ítem
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                            ),
-                            child: Image.network(
-                              petlost.imageUrl,
-                              height: 100,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            (loadingProgress
-                                                    .expectedTotalBytes ??
-                                                1)
-                                        : null,
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.error, size: 100);
-                              },
-                            ),
-                          ),
-                        ),
-
-                        // Detalles petlost
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            petlost.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                  return GestureDetector(
+                    onTap: () {
+                      // Navegar a PetDetailPage y pasar el petlost
+                      Get.to(() => PetDetailPage(pet: petlost));
+                    },
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Imagen del ítem
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ),
+                              child: Image.network(
+                                petlost.imageUrls.isNotEmpty
+                                    ? petlost.imageUrls.first
+                                    : '',
+                                height: 100,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(Icons.error, size: 100);
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Raza: ${petlost.breed}'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('Ciudad: ${petlost.city}'),
-                        ),
-                      ],
+
+                          // Detalles petlost
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              petlost.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text('Raza: ${petlost.breed}'),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text('Ciudad: ${petlost.city}'),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
