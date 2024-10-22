@@ -3,11 +3,13 @@
 import 'package:findapet/controllers/auth_controller.dart';
 import 'package:findapet/models/pet_model.dart';
 import 'package:findapet/pages/widgets/custom_buttom.dart';
+import 'package:findapet/pages/widgets/custom_dropdown.dart';
 import 'package:findapet/pages/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:findapet/controllers/petlost_controller.dart';
 import 'package:intl/intl.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class AddPetlost extends StatefulWidget {
   const AddPetlost({super.key});
@@ -20,34 +22,40 @@ class _AddPetlostState extends State<AddPetlost> {
   final petlostController _petlostController = Get.find();
   final AuthController _authController = Get.find();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
   final TextEditingController _breedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   DateTime? selectedDate;
 
-  PetLost? currentPetlost; // petLost actual
+  PetLost? currentPetlost; // Mascota perdida actual
+  // Lista de tipos de mascotas más comunes
+  List<String> petTypes = ['Perro', 'Gato', 'Ave', 'Conejo', 'Reptil', 'Otro'];
+
+  // Variable para almacenar el tipo de mascota seleccionado
+  String? selectedPetType;
 
   @override
   void initState() {
     super.initState();
-    // Verificar si estamos editando un ítem
+    // Verificar si estamos editando una mascota perdida
     if (Get.arguments != null) {
       currentPetlost = Get.arguments
-          as PetLost; // Obtener el ítem pasado a través de Get.arguments
+          as PetLost; // Obtener la mascota pasado a través de Get.arguments
       _loadPetData();
     }
   }
 
   void _loadPetData() {
     _nameController.text = currentPetlost!.name;
-    _typeController.text = currentPetlost!.type;
     _breedController.text = currentPetlost!.breed;
     _descriptionController.text = currentPetlost!.description;
     _locationController.text = currentPetlost!.location;
     _cityController.text = currentPetlost!.city;
     selectedDate = currentPetlost!.lostDate;
+
+    // Si estamos editando una mascota perdida, llenamos el tipo de mascota
+    selectedPetType = currentPetlost!.type;
 
     if (currentPetlost!.imageUrls.isNotEmpty) {
       _petlostController.imageFiles.value = [];
@@ -108,7 +116,6 @@ class _AddPetlostState extends State<AddPetlost> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          // Añadir SingleChildScrollView
           child: Column(
             children: [
               // Sección para seleccionar la imagen
@@ -117,33 +124,37 @@ class _AddPetlostState extends State<AddPetlost> {
                 child: Obx(() {
                   // Verificar si hay imágenes seleccionadas
                   if (_petlostController.imageFiles.isNotEmpty) {
-                    // Mostrar múltiples imágenes seleccionadas en móviles (File)
                     return SizedBox(
                       height: 150,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
+                      child: CarouselSlider.builder(
                         itemCount: _petlostController.imageFiles.length,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (context, index, realIndex) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.file(
                               _petlostController.imageFiles[index],
-                              height: 200,
-                              width: 200,
+                              height: 250,
+                              width: 250,
                               fit: BoxFit.cover,
                             ),
                           );
                         },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          aspectRatio: 16 / 9,
+                          onPageChanged: (index, reason) {
+                            // Puedes manejar el cambio de página aquí si es necesario
+                          },
+                        ),
                       ),
                     );
                   } else if (_petlostController.imageWebFiles.isNotEmpty) {
-                    // Mostrar múltiples imágenes seleccionadas en web (Uint8List)
                     return SizedBox(
                       height: 150,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
+                      child: CarouselSlider.builder(
                         itemCount: _petlostController.imageWebFiles.length,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (context, index, realIndex) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.memory(
@@ -154,6 +165,14 @@ class _AddPetlostState extends State<AddPetlost> {
                             ),
                           );
                         },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          aspectRatio: 16 / 9,
+                          onPageChanged: (index, reason) {
+                            // Puedes manejar el cambio de página aquí si es necesario
+                          },
+                        ),
                       ),
                     );
                   } else if (currentPetlost != null &&
@@ -161,10 +180,9 @@ class _AddPetlostState extends State<AddPetlost> {
                     // Mostrar imágenes existentes si estamos editando
                     return SizedBox(
                       height: 150,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
+                      child: CarouselSlider.builder(
                         itemCount: currentPetlost!.imageUrls.length,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (context, index, realIndex) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Image.network(
@@ -175,10 +193,17 @@ class _AddPetlostState extends State<AddPetlost> {
                             ),
                           );
                         },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          aspectRatio: 16 / 9,
+                          onPageChanged: (index, reason) {
+                            // Puedes manejar el cambio de página aquí si es necesario
+                          },
+                        ),
                       ),
                     );
                   } else {
-                    // Mostrar el contenedor para seleccionar una imagen
                     return Container(
                       height: 150,
                       color: Colors.grey[200],
@@ -189,6 +214,19 @@ class _AddPetlostState extends State<AddPetlost> {
               ),
               SizedBox(height: 20),
               CustomTextField(hintText: "Nombre", controller: _nameController),
+              SizedBox(height: 10),
+
+              // Campo de selección de tipo de mascota
+              CustomDropdownButton(
+                value: selectedPetType,
+                hint: 'Seleccione una categoría',
+                items: petTypes,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedPetType = newValue;
+                  });
+                },
+              ),
               SizedBox(height: 10),
               CustomTextField(hintText: "Raza", controller: _breedController),
               SizedBox(height: 10),
@@ -207,7 +245,7 @@ class _AddPetlostState extends State<AddPetlost> {
                     child: Text(
                       selectedDate != null
                           ? 'Fecha de Perdida: ${DateFormat('dd/MM/yyyy').format(selectedDate!)}'
-                          : 'Seleccione la Perdida',
+                          : 'Seleccione la Fecha de Perdida',
                     ),
                   ),
                   IconButton(
@@ -227,11 +265,24 @@ class _AddPetlostState extends State<AddPetlost> {
                           final description = _descriptionController.text;
                           final location = _locationController.text;
                           final city = _cityController.text;
-                          final type = _typeController.text;
 
                           if (selectedDate == null) {
                             Get.snackbar('Error',
                                 'Debe seleccionar una fecha de pérdida');
+                            return;
+                          }
+
+                          if (selectedPetType == null) {
+                            Get.snackbar(
+                                'Error', 'Debe seleccionar un tipo de mascota');
+                            return;
+                          }
+
+                          if (_petlostController.imageFiles.isEmpty &&
+                              (currentPetlost == null ||
+                                  currentPetlost!.imageUrls.isEmpty)) {
+                            Get.snackbar('Error',
+                                'Debe seleccionar al menos una imagen');
                             return;
                           }
 
@@ -240,7 +291,7 @@ class _AddPetlostState extends State<AddPetlost> {
                           if (currentPetlost == null) {
                             _petlostController.saveNewPetlost(
                               name,
-                              type,
+                              selectedPetType!,
                               breed,
                               ownerId,
                               description,
@@ -250,6 +301,7 @@ class _AddPetlostState extends State<AddPetlost> {
                             );
                           } else {
                             currentPetlost!.name = name;
+                            currentPetlost!.type = selectedPetType!;
                             currentPetlost!.breed = breed;
                             currentPetlost!.description = description;
                             currentPetlost!.location = location;
@@ -260,9 +312,9 @@ class _AddPetlostState extends State<AddPetlost> {
                           }
                         },
                         buttonText:
-                            currentPetlost == null ? 'Agregar' : 'Actualizar',
+                            currentPetlost == null ? "Agregar" : "Actualizar",
                       );
-              })
+              }),
             ],
           ),
         ),

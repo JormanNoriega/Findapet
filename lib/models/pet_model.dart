@@ -65,6 +65,7 @@ class PetLost extends Pet {
     return {
       'id': id,
       'name': name,
+      'type': type,
       'breed': breed,
       'ownerId': ownerId,
       'description': description,
@@ -115,6 +116,7 @@ class PetAdoption extends Pet {
     return {
       'id': id,
       'name': name,
+      'type': type,
       'breed': breed,
       'ownerId': ownerId,
       'description': description,

@@ -151,7 +151,7 @@ class petlostController extends GetxController {
     try {
       return await _petlostService.getPetLostById(id);
     } catch (e) {
-      Get.snackbar('Error', 'Ocurrió un error al obtener el ítem');
+      Get.snackbar('Error', 'Ocurrió un error al buscar la mascota');
       return null;
     }
   }
@@ -174,10 +174,10 @@ class petlostController extends GetxController {
       }
       // Actualizar los datos del petlost en Firestore
       await _petlostService.updatePetlostData(petlost);
-      Get.snackbar('Éxito', 'Ítem actualizado correctamente');
+      Get.snackbar('Éxito', 'Mascota actualizada correctamente');
       fetchPetLost(); // Volver a cargar los petlost después de actualizar
     } catch (e) {
-      Get.snackbar('Error', 'Ocurrió un error al actualizar el ítem');
+      Get.snackbar('Error', 'Ocurrió un error al actualizar la Mascota');
     } finally {
       isLoading.value = false;
     }
@@ -188,11 +188,11 @@ class petlostController extends GetxController {
     try {
       isLoading.value = true;
       await _petlostService.deletePetlostData(petlost.id);
-      Get.snackbar('Éxito', 'Ítem eliminado correctamente');
+      Get.snackbar('Éxito', 'Mascota eliminado correctamente');
       fetchPetLost();
       fetchPetLostByOwner();
     } catch (e) {
-      Get.snackbar('Error', 'Ocurrió un error al eliminar el ítem');
+      Get.snackbar('Error', 'Ocurrió un error al eliminar la Mascota');
     } finally {
       isLoading.value = false;
     }

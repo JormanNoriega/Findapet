@@ -105,12 +105,13 @@ class PetlostPage extends StatelessWidget {
 
                           // Detalles petlost
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 4),
                             child: Text(
                               petlost.name,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 17,
                               ),
                             ),
                           ),
