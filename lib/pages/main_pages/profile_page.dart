@@ -81,9 +81,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Editar Perfil',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20, // Cambia el tamaño de fuente aquí
             fontWeight: FontWeight.bold, // Si deseas ajustar el grosor
           ),

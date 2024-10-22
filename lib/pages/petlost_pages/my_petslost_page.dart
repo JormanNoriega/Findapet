@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:findapet/pages/petlost_pages/add_petlost.dart';
+import 'package:findapet/pages/widgets/custom_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:findapet/controllers/petlost_controller.dart';
@@ -59,9 +60,10 @@ class MyPetsLostPage extends StatelessWidget {
                     // Imagen de la mascota
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: pet.imageUrl.isNotEmpty
+                      child: (pet.imageUrls.isNotEmpty &&
+                              pet.imageUrls.first.isNotEmpty)
                           ? Image.network(
-                              pet.imageUrl,
+                              pet.imageUrls.first,
                               height: 90,
                               width: 90,
                               fit: BoxFit.cover,
@@ -129,13 +131,19 @@ class MyPetsLostPage extends StatelessWidget {
     Get.defaultDialog(
       title: "Eliminar Mascota",
       middleText: "¿Estás seguro de que deseas eliminar esta mascota?",
-      textCancel: "Cancelar",
-      textConfirm: "Eliminar",
-      confirmTextColor: Colors.white,
-      onConfirm: () {
-        _petLostController.deletePetLost(pet);
-        Get.back(); // Cerrar el diálogo después de confirmar
-      },
+      cancel: CustomButton(
+        buttonText: "Cancelar",
+        onPressed: () {
+          Get.back(); // Cerrar el diálogo
+        },
+      ),
+      confirm: CustomButton(
+        buttonText: "Eliminar",
+        onPressed: () {
+          _petLostController.deletePetLost(pet);
+          Get.back(); // Cerrar el diálogo después de confirmar
+        },
+      ),
     );
   }
 }

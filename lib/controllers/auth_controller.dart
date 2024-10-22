@@ -98,13 +98,14 @@ class AuthController extends GetxController {
 
   // Intentar login automático
   Future<void> _autoLogin() async {
-    String? email = storage.read('email');
-    String? password = storage.read('password');
-    if (email != null && password != null) {
-      await login(email, password); // Auto login con credenciales guardadas
-    } else {
-      // Manejo en caso de que el email o password sean nulos
-      Get.snackbar("Error", "No se encontraron credenciales guardadas");
+    try {
+      String? email = storage.read('email');
+      String? password = storage.read('password');
+      if (email != null && password != null) {
+        await login(email, password); // Auto login con credenciales guardadas
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Ocurrió un error durante el inicio de sesión automático");
     }
   }
 

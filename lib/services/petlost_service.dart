@@ -31,6 +31,7 @@ class PetlostService {
     }
     return null;
   }
+
   Future<List<PetLost>> getPetlostDataByOwner(String ownerId) async {
     try {
       QuerySnapshot petDocs = await _firestore
@@ -77,66 +78,74 @@ class PetlostService {
     }
   }
 
-  // Subir imagen de la mascota perdida desde Movil
-  Future<String?> uploadPetLostImage(File imageFile, String petId) async {
-    try {
-      Reference storageReference = _storage.ref('petlost/$petId');
-      UploadTask uploadTask = storageReference.putFile(imageFile);
-      TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
-    } catch (e) {
-      print("Error al subir la imagen de la mascota perdida: $e");
-    }
-    return null;
-  }
-
-  // subir imagen de la mascota perdida desde la web
-  Future<String?> uploadPetLostImageWeb(
-      Uint8List imageBytes, String petId) async {
-    try {
-      Reference storageReference = _storage.ref('petlost/$petId');
-      UploadTask uploadTask = storageReference.putData(imageBytes);
-      TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
-    } catch (e) {
-      print("Error al subir la imagen de la mascota perdida: $e");
-    }
-    return null;
-  }
-
-  // Metodo para seleccionar imagen dependiendo de la plataforma
-  Future<String?> pickPetLostImage(bool fromCamera) async {
+  // Metodo para seleccionar Multiples imagenes dependiendo de la plataforma
+  Future<List<String?>> pickPetLostImages(bool fromCamera) async {
     if (kIsWeb) {
       //si es web usamos filepicker
-      FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image);
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(type: FileType.image, allowMultiple: true);
       if (result != null && result.files.first.bytes != null) {
-        return result.files.first.name;
+        return result.files.map((file) => file.name).toList();
       } else {
-        return null;
+        return [];
       }
-    } else {
+    } else { 
       final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-          source: fromCamera ? ImageSource.camera : ImageSource.gallery);
-      if (pickedFile != null) {
-        return pickedFile.path;
+      final pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles != []) {
+        return pickedFiles.map((file) => file.path).toList();
       } else {
-        return null;
+        return [];
       }
     }
   }
 
-  // Metod para subir imagen segun la plataforma
-  Future<String?> uploadImageForPlatform(
-      dynamic imageFile, String petId) async {
-    if (kIsWeb && imageFile is Uint8List) {
-      return await uploadPetLostImageWeb(imageFile, petId);
-    } else if (imageFile is File) {
-      return await uploadPetLostImage(imageFile, petId);
+  // Subir imagenes de la mascota perdida desde Movil
+  Future<List<String?>> uploadPetLostImages(
+      List<File> imageFile, String petId) async {
+    List<String?> imageUrls = [];
+    for (File file in imageFile) {
+      try {
+        Reference storageReference = _storage.ref('petlost/$petId/${file.path.split('/').last}');
+        UploadTask uploadTask = storageReference.putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        imageUrls.add(await snapshot.ref.getDownloadURL());
+      } catch (e) {
+        print("Error al subir la imagen de la mascota perdida: $e");
+        imageUrls.add(null);
+      }
+    }
+    return imageUrls;
+  }
+
+  // subir imagenes de la mascota perdida desde la web
+  Future<List<String?>> uploadPetLostImagesWeb(
+      List<Uint8List> imageBytesList, String petId) async {
+    List<String?> imageUrls = [];
+    for (Uint8List imageBytes in imageBytesList) {
+      try {
+        Reference storageReference = _storage.ref('petlost/$petId');
+        UploadTask uploadTask = storageReference.putData(imageBytes);
+        TaskSnapshot snapshot = await uploadTask;
+        imageUrls.add(await snapshot.ref.getDownloadURL());
+      } catch (e) {
+        print("Error al subir la imagen de la mascota perdida: $e");
+        imageUrls.add(null);
+      }
+    }
+    return imageUrls;
+  }
+
+  // Metod para subir imagenes segun la plataforma
+  Future<List<String?>> uploadImagesForPlatform(
+      dynamic imageFiles, String petId) async {
+    if (kIsWeb && imageFiles is List<Uint8List>) {
+      return await uploadPetLostImagesWeb(imageFiles, petId);
+    } else if (imageFiles is List<File>) {
+      return await uploadPetLostImages(imageFiles, petId);
     } else {
       print("Error: tipo de archivo no soportado");
-      return null;
+      return [];
     }
   }
 }
