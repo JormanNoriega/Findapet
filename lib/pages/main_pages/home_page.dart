@@ -7,6 +7,7 @@ import '../../controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import '../widgets/menu_drawer.dart';
 import 'package:get/get.dart';
+import 'package:findapet/pages/main_pages/departments_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     MyPetsLostPage(),
     AdoptionPage(),
     EditProfilePage(),
+    DepartmentsPage(),
   ];
 
   // Cambiar página y almacenar el índice anterior en el historial
@@ -57,14 +59,7 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: const Color(0xFFF0F440),
-        leading: _selectedIndex != 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  _goBack();
-                },
-              )
-            : null,
+        leading: null,
         title: const Text(
           'Findapet',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
