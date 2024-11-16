@@ -1,7 +1,9 @@
+import 'package:findapet/pages/chat_pages/chat_page.dart';
 import 'package:findapet/pages/widgets/custom_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:findapet/models/pet_model.dart';
+import 'package:get/get.dart';
 
 class PetDetailPage extends StatefulWidget {
   final PetLost pet;
@@ -99,7 +101,14 @@ class _PetDetailPageState extends State<PetDetailPage> {
               // Detalles de la mascota
               _buildPetDetails(),
               SizedBox(height: 16),
-              CustomButton(onPressed: () {}, buttonText: "Contacto")
+              CustomButton(
+                onPressed: () {
+                  Get.to(() => ChatPage(
+                        receiverID: widget.pet.ownerId,
+                      ));
+                },
+                buttonText: "Contacto",
+              )
             ],
           ),
         ),
