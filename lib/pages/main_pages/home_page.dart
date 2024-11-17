@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:findapet/pages/chat_pages/chats_page.dart';
 import 'package:findapet/pages/main_pages/adoption_page.dart';
 import 'package:findapet/pages/petlost_pages/my_petslost_page.dart';
 import 'package:findapet/pages/petlost_pages/petlost_page.dart';
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     PetlostPage(),
     MyPetsLostPage(),
     AdoptionPage(),
+    ChatPages(),
     EditProfilePage(),
     DepartmentsPage(),
   ];
@@ -102,7 +104,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Adoptar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.chat_bubble),
             label: 'Perfil',
           ),
         ],

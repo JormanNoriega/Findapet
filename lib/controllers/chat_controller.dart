@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:findapet/models/message.dart';
-import 'package:findapet/services/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:findapet/models/chat_model.dart';
+import 'package:findapet/models/message.dart';
+import 'package:findapet/models/user_model.dart';
+import 'package:findapet/services/chat_service.dart';
 
 class ChatController extends GetxController {
   final ChatService _chatService = ChatService();
@@ -10,49 +12,73 @@ class ChatController extends GetxController {
 
   // Observables
   var messages = <Message>[].obs;
-  var isLoading = false.obs;
+  var userChats = <Chat>[].obs; // Lista de chats
+  var receiversInfo =
+      <String, UserModel>{}.obs; // Mapa de ID del receptor a su información
+  var isLoadingMessages = false.obs;
+  var isLoadingChats = false.obs;
 
-  // ID de usuario actual y receptor
+  // IDs del usuario actual y del receptor
   late String currentUserID;
-  late String receiverID;
-  late String currentUserEmail;
 
-  // Inicializar el chat
-  void initChat({
-    required String otherUserID,
-  }) {
+  @override
+  void onInit() {
+    super.onInit();
     currentUserID = _auth.currentUser!.uid;
-    currentUserEmail = _auth.currentUser!.email!;
-    receiverID = otherUserID;
-    _listenToMessages();
+    loadUserChats();
+  }
+
+  // Obtener todos los chats en los que participa el usuario
+  void loadUserChats() {
+    isLoadingChats.value = true;
+
+    _chatService.getUserChats(currentUserID).listen((chats) async {
+      userChats.value = chats;
+
+      // Cargar información de los receptores
+      for (Chat chat in chats) {
+        String otherUserID = chat.participants.firstWhere(
+            (id) => id != currentUserID); // Obtener el ID del receptor
+        if (!receiversInfo.containsKey(otherUserID)) {
+          UserModel receiverInfo = await _chatService.getUserInfo(otherUserID);
+          receiversInfo[otherUserID] = receiverInfo;
+        }
+      }
+      isLoadingChats.value = false;
+    }, onError: (error) {
+      isLoadingChats.value = false;
+      Get.snackbar('Error', 'No se pudieron cargar los chats: $error');
+    });
+  }
+
+  // Inicializar un chat específico
+  void initChat(String receiverID) {
+    _listenToMessages(receiverID);
   }
 
   // Escuchar mensajes en tiempo real
-  void _listenToMessages() {
-    isLoading.value = true;
-    _chatService.getMessages(currentUserID, receiverID).listen((snapshot) {
-      messages.clear();
-      for (var doc in snapshot.docs) {
-        messages.add(Message.fromMap(doc));
-      }
-      isLoading.value = false;
+  void _listenToMessages(String receiverID) {
+    isLoadingMessages.value = true;
+
+    _chatService.getMessages(currentUserID, receiverID).listen((messagesList) {
+      messages.value = messagesList;
+      isLoadingMessages.value = false;
     }, onError: (error) {
-      isLoading.value = false;
-      Get.snackbar('Error', 'No se pudo obtener los mensajes: $error');
+      isLoadingMessages.value = false;
+      Get.snackbar('Error', 'No se pudieron cargar los mensajes: $error');
     });
   }
 
   // Enviar mensaje
-  Future<void> sendMessage(String messageText) async {
+  Future<void> sendMessage(String receiverID, String messageText) async {
     if (messageText.trim().isEmpty) {
       Get.snackbar('Advertencia', 'El mensaje no puede estar vacío');
       return;
     }
 
-    // Crear un objeto Message
     Message newMessage = Message(
       senderID: currentUserID,
-      senderEmail: currentUserEmail,
+      senderEmail: _auth.currentUser!.email!,
       receiverID: receiverID,
       message: messageText,
       timestamp: Timestamp.now(),
@@ -63,12 +89,5 @@ class ChatController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'No se pudo enviar el mensaje: $e');
     }
-  }
-
-  // Limpiar datos al cerrar
-  @override
-  void onClose() {
-    messages.clear();
-    super.onClose();
   }
 }
