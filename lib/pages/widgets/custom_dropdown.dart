@@ -37,6 +37,7 @@ class CustomDropdownButton extends StatelessWidget {
             hint,
             style: const TextStyle(
               color: Color(0xFFA7A7A7), // Color del hint
+              fontSize: 16,
             ),
           ),
         ),

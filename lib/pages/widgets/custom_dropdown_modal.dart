@@ -36,6 +36,7 @@ class CustomModalDropdownButton extends StatelessWidget {
             value ?? hint,
             style: TextStyle(
               color: value == null ? Colors.grey : Colors.black,
+              fontSize: 16,
             ),
           ),
           Icon(Icons.arrow_drop_down, color: Colors.grey),

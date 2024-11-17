@@ -54,6 +54,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.2.10
+  flutter_launcher_icons: ^0.9.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -78,9 +80,26 @@ flutter:
   assets:
     - lib/assets/images/google-48.png
     - lib/assets/images/facebook-50.png
+    - lib/assets/images/findapet_icon.png
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+
+flutter_icons:
+  android: true
+  ios: true
+  web: true
+  image_path: "lib/assets/images/findapet_icon.png"
+
+
+flutter_native_splash:
+  color: "#DDFF00"
+  image: lib/assets/images/findapet_icon.png
+  android: true
+  ios: true
+  web: true
+  fullscreen: true
+  android_gravity: center
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
