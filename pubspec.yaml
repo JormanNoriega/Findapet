@@ -49,6 +49,7 @@ dependencies:
   file:
   country_picker:
   carousel_slider: ^5.0.0
+  http:
 
 dev_dependencies:
   flutter_test:

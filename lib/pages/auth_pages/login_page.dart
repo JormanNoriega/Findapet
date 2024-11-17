@@ -76,7 +76,7 @@ class LoginPage extends StatelessWidget {
                 const Text(
                   'o inicie sesión con',
                   style: TextStyle(
-                    color: const Color(0xFFA7A7A7),
+                    color:  Color(0xFFA7A7A7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -101,7 +101,7 @@ class LoginPage extends StatelessWidget {
                   child: const Text(
                     '¿No tiene una cuenta? Regístrese',
                     style: TextStyle(
-                      color: const Color(0xFFA7A7A7),
+                      color:  Color(0xFFA7A7A7),
                     ),
                   ),
                 ),
