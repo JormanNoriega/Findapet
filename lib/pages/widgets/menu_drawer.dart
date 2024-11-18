@@ -1,4 +1,5 @@
 import 'package:findapet/controllers/auth_controller.dart';
+import 'package:findapet/pages/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
 
 class MenuDrawer extends StatelessWidget {
@@ -28,24 +29,10 @@ class MenuDrawer extends StatelessWidget {
               title: Text('Perfil'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return EditProfilePage();
+                }));
                 onPageSelected(3); // Navegar a la página de perfil
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.notifications),
-              title: Text('Notificaciones'),
-              onTap: () {
-                Navigator.pop(context);
-                onPageSelected(2); // Navegar a la página de notificaciones
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.map),
-              title: Text('Direcciones'),
-              onTap: () {
-                Navigator.pop(context);
-                onPageSelected(4); // Navegar a la página 4 (Direcciones)
-                //logica para moverte a la page de direcciones
               },
             ),
             ListTile(

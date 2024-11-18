@@ -4,18 +4,21 @@ class CustomModalDropdownButton extends StatelessWidget {
   final String? value;
   final String hint;
   final double? width;
+  final double? height;
 
   const CustomModalDropdownButton({
     Key? key,
     required this.value,
     required this.hint,
     this.width,
+    this.height,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width ?? double.infinity,
+      height: 56,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
