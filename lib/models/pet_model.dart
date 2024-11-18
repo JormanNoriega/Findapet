@@ -8,7 +8,8 @@ abstract class Pet {
   String ownerId;
   String description;
   List<String> imageUrls;
-  String city;
+  String? department;
+  String? municipality;
 
   Pet({
     required this.id,
@@ -18,16 +19,19 @@ abstract class Pet {
     required this.ownerId,
     required this.description,
     required this.imageUrls,
-    required this.city,
+    this.department,
+    this.municipality,
   });
 
   Map<String, dynamic> toMap();
 }
 
-//CLASE PARA MASCOTAS PERDIDAS
+//CLASE PARA MASCOTAS PERDIDAS/////////////////////////////////////////////////////////////////////////
 class PetLost extends Pet {
   DateTime? lostDate;
   String location;
+  String? latitude;
+  String? longitude;
 
   PetLost({
     required super.id,
@@ -37,9 +41,12 @@ class PetLost extends Pet {
     required super.ownerId,
     required super.description,
     required super.imageUrls,
-    required super.city,
+    required super.department,
+    required super.municipality,
     this.lostDate,
     required this.location,
+    this.latitude,
+    this.longitude,
   });
 
   factory PetLost.fromMap(DocumentSnapshot doc) {
@@ -52,11 +59,14 @@ class PetLost extends Pet {
       ownerId: data['ownerId'] ?? '',
       description: data['description'] ?? '',
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      city: data['city'] ?? '',
+      municipality: data['city'] ?? '',
+      department: data['department'] ?? '',
       lostDate: data['lostDate'] != null
           ? (data['lostDate'] as Timestamp).toDate()
           : null,
       location: data['location'] ?? '',
+      latitude: data['latitude'] ?? '',
+      longitude: data['longitude'] ?? '',
     );
   }
 
@@ -70,14 +80,15 @@ class PetLost extends Pet {
       'ownerId': ownerId,
       'description': description,
       'imageUrls': imageUrls,
-      'city': city,
+      'department': department,
+      'municipality': municipality,
       'lostDate': lostDate != null ? Timestamp.fromDate(lostDate!) : null,
       'location': location,
     };
   }
 }
 
-//CLASE PARA ADOPCION DE MASCOTAS
+//CLASE PARA ADOPCION DE MASCOTAS /////////////////////////////////////////////////////////////////////////
 class PetAdoption extends Pet {
   bool isVaccinated;
   bool isSterilized;
@@ -90,7 +101,8 @@ class PetAdoption extends Pet {
     required super.ownerId,
     required super.description,
     required super.imageUrls,
-    required super.city,
+    required super.department,
+    required super.municipality,
     required this.isVaccinated,
     required this.isSterilized,
   });
@@ -105,7 +117,8 @@ class PetAdoption extends Pet {
       ownerId: data['ownerId'],
       description: data['description'],
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      city: data['city'],
+      department: data['department'],
+      municipality: data['city'],
       isVaccinated: data['isVaccinated'],
       isSterilized: data['isSterilized'],
     );
@@ -121,7 +134,8 @@ class PetAdoption extends Pet {
       'ownerId': ownerId,
       'description': description,
       'imageUrls': imageUrls,
-      'city': city,
+      'department': department,
+      'municipality': municipality,
       'isVaccinated': isVaccinated,
       'isSterilized': isSterilized,
     };

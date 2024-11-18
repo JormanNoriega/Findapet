@@ -138,7 +138,7 @@ class _PetDetailPageState extends State<PetDetailPage> {
             SizedBox(height: 10),
             _buildDetailRow(Icons.pets, "Tipo de mascota: ${widget.pet.type}"),
             _buildDetailRow(Icons.pets_outlined, 'Raza: ${widget.pet.breed}'),
-            _buildDetailRow(Icons.location_city, 'Ciudad: ${widget.pet.city}'),
+            _buildDetailRow(Icons.location_city, 'Ciudad: ${widget.pet.municipality}'),
             _buildDetailRow(
                 Icons.date_range, 'Fecha de pérdida: ${widget.pet.lostDate}'),
             _buildDetailRow(

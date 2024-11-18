@@ -6,9 +6,12 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final bool readOnly;
   final bool enabled;
-  final Widget? suffixIcon; // Agregamos el parámetro suffixIcon
-  final Function(String)? onChanged; // Agregamos el parámetro onChanged
-  final FocusNode? focusNode; // Agregamos el parámetro focusNode
+  final Widget? suffixIcon; // Para íconos opcionales
+  final Function(String)? onChanged; // Para manejar cambios en el texto
+  final FocusNode? focusNode; // Para gestionar el foco del campo
+  final int? minLines; // Para texto de varias líneas
+  final int? maxLines; // Para permitir múltiples líneas
+  final TextInputType? keyboardType; // Tipo de teclado
 
   const CustomTextField({
     super.key,
@@ -17,9 +20,12 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.readOnly = false,
     this.enabled = true,
-    this.suffixIcon, // Constructor para suffixIcon
-    this.onChanged, // Constructor para onChanged
-    this.focusNode, // Constructor para focusNode
+    this.suffixIcon,
+    this.onChanged,
+    this.focusNode,
+    this.minLines = 1, // Predeterminado: 1 línea
+    this.maxLines = 1, // Predeterminado: 1 línea
+    this.keyboardType, // Tipo de teclado personalizado
   });
 
   @override
@@ -42,8 +48,11 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         readOnly: readOnly,
         enabled: enabled,
-        onChanged: onChanged, // Pasamos el onChanged al TextField
-        focusNode: focusNode, // Asignamos el focusNode al TextField
+        onChanged: onChanged,
+        focusNode: focusNode,
+        minLines: minLines, // Mínimo de líneas
+        maxLines: maxLines, // Máximo de líneas
+        keyboardType: keyboardType ?? TextInputType.text, // Tipo de teclado
         decoration: InputDecoration(
           labelText: hintText,
           labelStyle: const TextStyle(
@@ -52,7 +61,7 @@ class CustomTextField extends StatelessWidget {
           filled: true,
           fillColor: Colors.transparent,
           border: InputBorder.none,
-          suffixIcon: suffixIcon, // Usamos suffixIcon como parámetro opcional
+          suffixIcon: suffixIcon,
         ),
       ),
     );
