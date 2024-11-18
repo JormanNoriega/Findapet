@@ -11,7 +11,7 @@ class FirebaseService {
 
   // Registro de usuario
   Future<UserModel?> registerWithEmail(
-      String email, String password, String name) async {
+      String email, String password, String name ,String department, String municipality) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -27,6 +27,8 @@ class FirebaseService {
             email: email,
             phone: '',
             country: '',
+            department: department,
+            municipality: municipality,
             lastName: '');
         await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
         return newUser;
@@ -79,7 +81,7 @@ class FirebaseService {
     }
   }
 
-  // Subir imagen de perfil a Firebase Storage
+  // Subir imagen de perfil a Firebase Storage desde Movil
   Future<String?> uploadProfileImage(String uid, File imageFile) async {
     try {
       Reference storageRef = _storage.ref().child('profileImages').child(uid);

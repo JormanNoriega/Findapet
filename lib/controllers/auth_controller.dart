@@ -1,10 +1,10 @@
-import 'dart:io'; // Para manejo de imágenes
-import 'package:get/get.dart';
+import '../pages/auth_pages/login_page.dart';
 import 'package:get_storage/get_storage.dart';
-import '../models/user_model.dart';
+import '../pages/main_pages/home_page.dart';
 import '../services/firebase_service.dart';
-import '../pages/home_page.dart';
-import '../pages/login_page.dart';
+import '../models/user_model.dart';
+import 'package:get/get.dart';
+import 'dart:io'; // Para manejo de imágenes
 
 class AuthController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();
@@ -19,15 +19,15 @@ class AuthController extends GetxController {
   }
 
   // Registrar usuario
-  Future<void> register(String email, String password, String name) async {
+  Future<void> register(String email, String password, String name, String department, String municipality) async {
     try {
       isLoading.value = true;
       UserModel? newUser =
-          await _firebaseService.registerWithEmail(email, password, name);
+          await _firebaseService.registerWithEmail(email, password, name, department, municipality);
       if (newUser != null) {
         userModel.value = newUser;
         await _saveCredentials(email, password);
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => HomePage());
       } else {
         Get.snackbar("Error", "No se pudo registrar el usuario");
       }
@@ -47,7 +47,7 @@ class AuthController extends GetxController {
       if (loggedInUser != null) {
         userModel.value = loggedInUser;
         await _saveCredentials(email, password);
-        Get.offAll(() => const HomePage());
+        Get.offAll(() => HomePage());
       } else {
         Get.snackbar("Error", "No se pudo iniciar sesión");
       }
@@ -98,13 +98,14 @@ class AuthController extends GetxController {
 
   // Intentar login automático
   Future<void> _autoLogin() async {
-    String? email = storage.read('email');
-    String? password = storage.read('password');
-    if (email != null && password != null) {
-      await login(email, password); // Auto login con credenciales guardadas
-    } else {
-      // Manejo en caso de que el email o password sean nulos
-      Get.snackbar("Error", "No se encontraron credenciales guardadas");
+    try {
+      String? email = storage.read('email');
+      String? password = storage.read('password');
+      if (email != null && password != null) {
+        await login(email, password); // Auto login con credenciales guardadas
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Ocurrió un error durante el inicio de sesión automático");
     }
   }
 
@@ -116,12 +117,12 @@ class AuthController extends GetxController {
 
 // Método para actualizar los datos del perfil del usuario
   Future<void> updateUserProfile(
-      String lastName, String phone, String country) async {
+      String lastName, String phone, String country, String department, String municipality ) async {
     try {
       String uid = userModel.value!.uid;
 
       // Llamar al método del servicio para actualizar los datos en Firestore
-      await _firebaseService.updateUserProfile(uid, lastName, phone, country);
+      await _firebaseService.updateUserProfile(uid, lastName, phone, country, );
 
       // Crear una nueva instancia de UserModel con los datos actualizados
       UserModel updatedUser = UserModel(
@@ -130,6 +131,8 @@ class AuthController extends GetxController {
         lastName: lastName, // Usar el nuevo apellido
         phone: phone, // Usar el nuevo teléfono
         country: country, // Usar el nuevo país
+        department: department, // Usar el nuevo departamento
+        municipality: municipality, // Usar el nuevo municipio
         email: userModel.value!.email, // Mantener el correo electrónico
         profileImageUrl:
             userModel.value!.profileImageUrl, // Mantener la imagen de perfil
