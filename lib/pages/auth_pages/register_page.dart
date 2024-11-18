@@ -120,6 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    const double spacing = 20.0; // Espaciado constante entre los widgets
 
     return Scaffold(
       body: SafeArea(
@@ -146,30 +147,29 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: spacing),
                 CustomTextField(
                   controller: _nameController,
                   hintText: 'Nombre',
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: spacing),
                 CustomTextField(
                   controller: _emailController,
                   hintText: 'Email',
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: spacing),
                 CustomTextField(
                   controller: _passwordController,
                   hintText: 'Contraseña',
                   obscureText: true,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: spacing),
                 CustomTextField(
                   controller: _confirmPasswordController,
                   hintText: 'Confirmar Contraseña',
                   obscureText: true,
                 ),
-                const SizedBox(height: 20),
-                const SizedBox(height: 8),
+                const SizedBox(height: spacing),
                 GestureDetector(
                   onTap: () => _showSelectionModal(
                     context: context,
@@ -186,12 +186,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   child: CustomModalDropdownButton(
                     hint:
-                        _locationController.selectedDepartment ?? "Seleccionar",
+                        _locationController.selectedDepartment ?? "Seleccionar Departamento",
                     value: _locationController.selectedDepartment,
                     width: screenWidth,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: spacing),
                 GestureDetector(
                   onTap: () {
                     if (_locationController.selectedDepartment != null &&
@@ -211,7 +211,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                   child: CustomModalDropdownButton(
                     hint: _locationController.selectedMunicipality ??
-                        "Seleccionar",
+                        "Seleccionar Municipio",
                     value: _locationController.selectedMunicipality,
                     width: screenWidth,
                   ),

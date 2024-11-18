@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final int? minLines; // Para texto de varias líneas
   final int? maxLines; // Para permitir múltiples líneas
   final TextInputType? keyboardType; // Tipo de teclado
+  
 
   const CustomTextField({
     super.key,
