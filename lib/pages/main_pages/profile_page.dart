@@ -272,6 +272,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 16),
               CustomTextField(
                 hintText: 'Teléfono',
+                keyboardType: TextInputType.number,
                 controller: _phoneController,
               ),
               const SizedBox(height: 16),

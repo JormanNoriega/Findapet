@@ -3,12 +3,10 @@ import 'package:findapet/pages/chat_pages/chats_page.dart';
 import 'package:findapet/pages/main_pages/adoption_page.dart';
 import 'package:findapet/pages/petlost_pages/my_petslost_page.dart';
 import 'package:findapet/pages/petlost_pages/petlost_page.dart';
-import '../../pages/main_pages/profile_page.dart';
 import '../../controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import '../widgets/menu_drawer.dart';
 import 'package:get/get.dart';
-import 'package:findapet/pages/main_pages/departments_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,8 +29,6 @@ class _HomePageState extends State<HomePage> {
     MyPetsLostPage(),
     AdoptionPage(),
     ChatPages(),
-    EditProfilePage(),
-    DepartmentsPage(),
   ];
 
   // Cambiar página y almacenar el índice anterior en el historial
@@ -104,8 +100,8 @@ class _HomePageState extends State<HomePage> {
             label: 'Adoptar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble),
-            label: 'Perfil',
+            icon: Icon(Icons.chat),
+            label: 'Chats',
           ),
         ],
       ),

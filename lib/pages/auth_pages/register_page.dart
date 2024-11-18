@@ -185,8 +185,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   child: CustomModalDropdownButton(
-                    hint:
-                        _locationController.selectedDepartment ?? "Seleccionar",
+                    hint: _locationController.selectedDepartment ??
+                        "Departamento",
                     value: _locationController.selectedDepartment,
                     width: screenWidth,
                   ),
@@ -210,8 +210,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     }
                   },
                   child: CustomModalDropdownButton(
-                    hint: _locationController.selectedMunicipality ??
-                        "Seleccionar",
+                    hint:
+                        _locationController.selectedMunicipality ?? "Municipio",
                     value: _locationController.selectedMunicipality,
                     width: screenWidth,
                   ),
