@@ -25,7 +25,7 @@ class _AddPetlostState extends State<AddPetlost> {
   final TextEditingController _breedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
+
   DateTime? selectedDate;
 
   PetLost? currentPetlost; // Mascota perdida actual
@@ -51,7 +51,6 @@ class _AddPetlostState extends State<AddPetlost> {
     _breedController.text = currentPetlost!.breed;
     _descriptionController.text = currentPetlost!.description;
     _locationController.text = currentPetlost!.location;
-    _cityController.text = currentPetlost!.city;
     selectedDate = currentPetlost!.lostDate;
 
     // Si estamos editando una mascota perdida, llenamos el tipo de mascota
@@ -231,12 +230,15 @@ class _AddPetlostState extends State<AddPetlost> {
               CustomTextField(hintText: "Raza", controller: _breedController),
               SizedBox(height: 10),
               CustomTextField(
-                  hintText: "Descripción", controller: _descriptionController),
-              SizedBox(height: 10),
-              CustomTextField(
                   hintText: "Ubicación", controller: _locationController),
               SizedBox(height: 10),
-              CustomTextField(hintText: "Ciudad", controller: _cityController),
+              CustomTextField(
+                hintText: "Añade una Descripcion....",
+                controller: _descriptionController,
+                minLines: 5,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+              ),
               SizedBox(height: 10),
               // Campo de selección de fecha de pérdida
               Row(
@@ -264,7 +266,10 @@ class _AddPetlostState extends State<AddPetlost> {
                           final breed = _breedController.text;
                           final description = _descriptionController.text;
                           final location = _locationController.text;
-                          final city = _cityController.text;
+                          final department =
+                              _authController.userModel.value!.department;
+                          final municipality =
+                              _authController.userModel.value!.municipality;
 
                           if (selectedDate == null) {
                             Get.snackbar('Error',
@@ -295,9 +300,12 @@ class _AddPetlostState extends State<AddPetlost> {
                               breed,
                               ownerId,
                               description,
-                              city,
+                              department,
+                              municipality,
                               selectedDate.toString(),
                               location,
+                              '0', // Latitud
+                              '0', // Longitud
                             );
                           } else {
                             currentPetlost!.name = name;
@@ -306,7 +314,10 @@ class _AddPetlostState extends State<AddPetlost> {
                             currentPetlost!.description = description;
                             currentPetlost!.location = location;
                             currentPetlost!.ownerId = ownerId;
-                            currentPetlost!.city = city;
+                            currentPetlost!.department =
+                                _authController.userModel.value!.department;
+                            currentPetlost!.municipality =
+                                _authController.userModel.value!.municipality;
                             currentPetlost!.lostDate = selectedDate;
                             _petlostController.updatePetLost(currentPetlost!);
                           }

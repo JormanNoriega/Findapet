@@ -1,11 +1,11 @@
 import 'package:image_picker/image_picker.dart';
 import '../../controllers/auth_controller.dart';
-import '../widgets/custom_text_field.dart'; // Importa el widget de campo de texto personalizado
+import '../widgets/custom_text_field.dart';
 import '../widgets/country_selector.dart';
 import 'package:flutter/material.dart';
-import '../widgets/custom_buttom.dart'; // Importa el widget de botón personalizado
-import '../../controllers/location_controller.dart'; // Controlador para ubicaciones
-import '../widgets/custom_dropdown_modal.dart'; // Ruta del nuevo widget
+import '../widgets/custom_buttom.dart';
+import '../../controllers/location_controller.dart';
+import '../widgets/custom_dropdown_modal.dart';
 import '../../models/user_model.dart';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -23,25 +23,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _nameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  String? _selectedCountry; // País seleccionado
-  File? _selectedImage; // Imagen seleccionada por el usuario
-  bool _isLoadingLocations = true; // Para controlar la carga de ubicaciones
+  String? _selectedCountry;
+  File? _selectedImage;
 
   @override
   void initState() {
     super.initState();
-    // Inicializa los campos con los datos del usuario
-    _nameController.text = _authController.userModel.value?.name ?? '';
-    _lastNameController.text = _authController.userModel.value?.lastName ?? '';
-    _phoneController.text = _authController.userModel.value?.phone ?? '';
-    _selectedCountry = _authController.userModel.value?.country;
 
-    // Cargar departamentos y municipios
-    _locationController.initLocations().then((_) {
-      setState(() {
-        _isLoadingLocations = false;
+    // Inicializar campos con los datos del usuario
+    UserModel? user = _authController.userModel.value;
+    if (user != null) {
+      _nameController.text = user.name;
+      _lastNameController.text = user.lastName;
+      _phoneController.text = user.phone;
+      _selectedCountry = user.country;
+
+      // Inicializar ubicaciones y establecer valores seleccionados
+      _locationController.initLocations().then((_) {
+        _locationController.initializeSelectedLocation(
+          user.department,
+          user.municipality,
+        );
+        setState(() {});
       });
-    });
+    }
   }
 
   @override
@@ -81,10 +86,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     try {
-      // Actualizar los datos del usuario
-      await _authController.updateUserProfile(lastName, phone, country);
+      // Actualizar perfil del usuario
+      await _authController.updateUserProfile(
+        lastName,
+        phone,
+        country,
+        department,
+        municipality,
+      );
 
-      // Si se ha seleccionado una imagen, subirla y actualizar la URL
+      // Subir imagen seleccionada si aplica
       if (_selectedImage != null) {
         await _authController.updateProfileImage(_selectedImage!);
       }
@@ -125,7 +136,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.9,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -188,22 +200,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
         setState(() {
           _locationController.selectedDepartment = selectedDepartment;
           _locationController.updateMunicipalities(selectedDepartment);
+          _locationController.selectedMunicipality = null; // Reinicia municipio
         });
       },
     );
   }
 
   void _openMunicipalitySelector(BuildContext context) {
-    _showSelectionModal(
-      context: context,
-      title: 'Municipio',
-      items: _locationController.municipalities,
-      onItemSelected: (selectedMunicipality) {
-        setState(() {
-          _locationController.selectedMunicipality = selectedMunicipality;
-        });
-      },
-    );
+    if (_locationController.selectedDepartment != null &&
+        _locationController.municipalities.isNotEmpty) {
+      _showSelectionModal(
+        context: context,
+        title: 'Municipio',
+        items: _locationController.municipalities,
+        onItemSelected: (selectedMunicipality) {
+          setState(() {
+            _locationController.selectedMunicipality = selectedMunicipality;
+          });
+        },
+      );
+    }
   }
 
   @override
@@ -271,20 +287,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
               GestureDetector(
                 onTap: () => _openDepartmentSelector(context),
                 child: CustomModalDropdownButton(
-                  hint: _locationController.selectedDepartment ?? "Seleccionar Departamento",
+                  hint: _locationController.selectedDepartment ??
+                      "Seleccionar Departamento",
                   value: _locationController.selectedDepartment,
                 ),
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () {
-                  if (_locationController.selectedDepartment != null &&
-                      _locationController.municipalities.isNotEmpty) {
-                    _openMunicipalitySelector(context);
-                  }
-                },
+                onTap: () => _openMunicipalitySelector(context),
                 child: CustomModalDropdownButton(
-                  hint: _locationController.selectedMunicipality ?? "Seleccionar Municipio",
+                  hint: _locationController.selectedMunicipality ??
+                      "Seleccionar Municipio",
                   value: _locationController.selectedMunicipality,
                 ),
               ),

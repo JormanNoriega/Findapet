@@ -4,6 +4,8 @@ class UserModel {
   final String lastName;
   final String phone;
   final String country;
+  final String department;
+  final String municipality;  
   final String email;
   String? profileImageUrl; // Imagen de perfil opcional
 
@@ -13,6 +15,8 @@ class UserModel {
     required this.lastName,
     required this.phone,
     required this.country,
+    required this.department,
+    required this.municipality,
     required this.email,
     this.profileImageUrl,
   });
@@ -25,6 +29,8 @@ class UserModel {
       'lastName': lastName,
       'phone': phone,
       'county': country,
+      'department': department,
+      'municipality': municipality,
       'email': email,
       'profileImageUrl': profileImageUrl,
     };
@@ -38,6 +44,8 @@ class UserModel {
       lastName: data['lastName'] ?? '',
       phone: data['phone'] ?? '',
       country: data['country'] ?? '',
+      department: data['department'] ?? '',
+      municipality: data['municipality'] ?? '',
       email: data['email'] ?? '',
       profileImageUrl: data['profileImageUrl'],
     );

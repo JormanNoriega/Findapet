@@ -23,4 +23,17 @@ class LocationController {
         .toList();
     selectedMunicipality = null;
   }
+
+  void initializeSelectedLocation(String? department, String? municipality) {
+    // Establecer el departamento seleccionado
+    if (department != null && departments.contains(department)) {
+      selectedDepartment = department;
+      updateMunicipalities(department);
+
+      // Establecer el municipio seleccionado
+      if (municipality != null && municipalities.contains(municipality)) {
+        selectedMunicipality = municipality;
+      }
+    }
+  }
 }

@@ -19,11 +19,11 @@ class AuthController extends GetxController {
   }
 
   // Registrar usuario
-  Future<void> register(String email, String password, String name) async {
+  Future<void> register(String email, String password, String name, String department, String municipality) async {
     try {
       isLoading.value = true;
       UserModel? newUser =
-          await _firebaseService.registerWithEmail(email, password, name);
+          await _firebaseService.registerWithEmail(email, password, name, department, municipality);
       if (newUser != null) {
         userModel.value = newUser;
         await _saveCredentials(email, password);
@@ -117,12 +117,12 @@ class AuthController extends GetxController {
 
 // Método para actualizar los datos del perfil del usuario
   Future<void> updateUserProfile(
-      String lastName, String phone, String country) async {
+      String lastName, String phone, String country, String department, String municipality ) async {
     try {
       String uid = userModel.value!.uid;
 
       // Llamar al método del servicio para actualizar los datos en Firestore
-      await _firebaseService.updateUserProfile(uid, lastName, phone, country);
+      await _firebaseService.updateUserProfile(uid, lastName, phone, country, );
 
       // Crear una nueva instancia de UserModel con los datos actualizados
       UserModel updatedUser = UserModel(
@@ -131,6 +131,8 @@ class AuthController extends GetxController {
         lastName: lastName, // Usar el nuevo apellido
         phone: phone, // Usar el nuevo teléfono
         country: country, // Usar el nuevo país
+        department: department, // Usar el nuevo departamento
+        municipality: municipality, // Usar el nuevo municipio
         email: userModel.value!.email, // Mantener el correo electrónico
         profileImageUrl:
             userModel.value!.profileImageUrl, // Mantener la imagen de perfil

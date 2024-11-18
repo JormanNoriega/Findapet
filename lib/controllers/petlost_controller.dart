@@ -55,9 +55,12 @@ class petlostController extends GetxController {
       String breed,
       String ownerId,
       String description,
-      String city,
+      String department,
+      String municipality,
       String lostDate,
-      String location) async {
+      String location,
+      String latitude,
+      String longitude) async {
     try {
       isLoading.value = true;
       String id = const Uuid().v4(); // Generar un ID único para la mascota
@@ -85,9 +88,12 @@ class petlostController extends GetxController {
         ownerId: ownerId,
         description: description,
         imageUrls: imageUrls,
-        city: city,
         lostDate: DateTime.parse(lostDate),
         location: location,
+        department: department,
+        municipality: municipality,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       // Guardar el ítem usando el servicio
@@ -146,7 +152,7 @@ class petlostController extends GetxController {
     applyFilter(); // Aplicar el filtro cada vez que se actualice el texto de búsqueda
   }
 
-  // Método para obtener un ítem por su ID
+  // Método para obtener un petlost por su ID
   Future<PetLost?> getItemPetLostById(String id) async {
     try {
       return await _petlostService.getPetLostById(id);
