@@ -30,8 +30,8 @@ abstract class Pet {
 class PetLost extends Pet {
   DateTime? lostDate;
   String location;
-  String? latitude;
-  String? longitude;
+  double? latitude;
+  double? longitude;
 
   PetLost({
     required super.id,
@@ -59,14 +59,18 @@ class PetLost extends Pet {
       ownerId: data['ownerId'] ?? '',
       description: data['description'] ?? '',
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      municipality: data['city'] ?? '',
+      municipality: data['municipality'] ?? '',
       department: data['department'] ?? '',
       lostDate: data['lostDate'] != null
           ? (data['lostDate'] as Timestamp).toDate()
           : null,
       location: data['location'] ?? '',
-      latitude: data['latitude'] ?? '',
-      longitude: data['longitude'] ?? '',
+      latitude: (data['latitude'] != null && data['latitude'] is num)
+          ? data['latitude'].toDouble()
+          : null,
+      longitude: (data['longitude'] != null && data['longitude'] is num)
+          ? data['longitude'].toDouble()
+          : null,
     );
   }
 
@@ -84,6 +88,8 @@ class PetLost extends Pet {
       'municipality': municipality,
       'lostDate': lostDate != null ? Timestamp.fromDate(lostDate!) : null,
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }
@@ -110,17 +116,17 @@ class PetAdoption extends Pet {
   factory PetAdoption.fromMap(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return PetAdoption(
-      id: data['id'],
-      name: data['name'],
-      type: data['type'],
-      breed: data['breed'],
-      ownerId: data['ownerId'],
-      description: data['description'],
+      id: doc.id,
+      name: data['name'] ?? '',
+      type: data['type'] ?? '',
+      breed: data['breed'] ?? '',
+      ownerId: data['ownerId'] ?? '',
+      description: data['description'] ?? '',
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      department: data['department'],
-      municipality: data['city'],
-      isVaccinated: data['isVaccinated'],
-      isSterilized: data['isSterilized'],
+      department: data['department'] ?? '',
+      municipality: data['municipality'] ?? '',
+      isVaccinated: data['isVaccinated'] ?? false,
+      isSterilized: data['isSterilized'] ?? false,
     );
   }
 

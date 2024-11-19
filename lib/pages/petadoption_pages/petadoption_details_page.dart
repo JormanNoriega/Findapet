@@ -1,22 +1,22 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:findapet/pages/chat_pages/chat_page.dart';
 import 'package:findapet/pages/widgets/custom_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:findapet/models/pet_model.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
-class PetDetailPage extends StatefulWidget {
-  final PetLost pet;
+class PetAdoptionDetailPage extends StatefulWidget {
+  final PetAdoption pet;
 
-  PetDetailPage({required this.pet});
+  PetAdoptionDetailPage({required this.pet});
 
   @override
-  _PetDetailPageState createState() => _PetDetailPageState();
+  _PetAdoptionDetailPageState createState() => _PetAdoptionDetailPageState();
 }
 
-class _PetDetailPageState extends State<PetDetailPage> {
+class _PetAdoptionDetailPageState extends State<PetAdoptionDetailPage> {
   int _currentIndex = 0;
 
   @override
@@ -29,7 +29,6 @@ class _PetDetailPageState extends State<PetDetailPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          // Agregado aquí
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -104,9 +103,6 @@ class _PetDetailPageState extends State<PetDetailPage> {
               // Detalles de la mascota
               _buildPetDetails(),
               SizedBox(height: 16),
-              // Mostrar la ubicación seleccionada en un mapa
-              _buildLocationMap(),
-              SizedBox(height: 16),
               CustomButton(
                 onPressed: () {
                   Get.to(() => ChatPage(
@@ -145,11 +141,11 @@ class _PetDetailPageState extends State<PetDetailPage> {
             _buildDetailRow(Icons.pets, "Tipo de mascota: ${widget.pet.type}"),
             _buildDetailRow(Icons.pets_outlined, 'Raza: ${widget.pet.breed}'),
             _buildDetailRow(
-                Icons.location_city, 'Munucipio: ${widget.pet.municipality}'),
-            _buildDetailRow(Icons.date_range,
-                'Fecha de pérdida: ${_formatDate(widget.pet.lostDate)}'),
-            _buildDetailRow(
-                Icons.pin_drop, "Ubicación: ${widget.pet.location}"),
+                Icons.location_city, 'Municipio: ${widget.pet.municipality}'),
+            _buildDetailRow(Icons.health_and_safety,
+                'Vacunado: ${widget.pet.isVaccinated ? "Sí" : "No"}'),
+            _buildDetailRow(Icons.medical_services,
+                'Esterilizado: ${widget.pet.isSterilized ? "Sí" : "No"}'),
             _buildDetailRow(
                 Icons.description, 'Descripción: ${widget.pet.description}'),
           ],
@@ -179,65 +175,7 @@ class _PetDetailPageState extends State<PetDetailPage> {
       ),
     );
   }
-
-  Widget _buildLocationMap() {
-    if (widget.pet.latitude == null || widget.pet.longitude == null) {
-      return const Text(
-        'No hay ubicación disponible',
-        style: TextStyle(color: Colors.red, fontSize: 16),
-      );
-    }
-
-    final LatLng petLocation =
-        LatLng(widget.pet.latitude!, widget.pet.longitude!);
-
-    return SizedBox(
-      height: 250,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.blue, // Color del borde
-            width: 1, // Grosor del borde
-          ),
-          borderRadius: BorderRadius.circular(15), // Bordes redondeados
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15), // Redondea esquinas del mapa
-          child: GoogleMap(
-            myLocationEnabled: true,
-            scrollGesturesEnabled: true, // Permite mover el mapa
-            zoomGesturesEnabled: true, // Permite hacer zoom
-            initialCameraPosition: CameraPosition(
-              target: petLocation,
-              zoom: 15,
-            ),
-            onMapCreated: (controller) {
-              controller.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: petLocation,
-                    zoom: 15,
-                  ),
-                ),
-              );
-            },
-            markers: {
-              Marker(
-                markerId: const MarkerId('pet_location'),
-                position: petLocation,
-              ),
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'Fecha no disponible'; // Manejo de nulos
-    return DateFormat('dd/MM/yyyy').format(date); // Convierte DateTime a String
-  }
-
+  
   void _onDotTap(int index) {
     setState(() {
       _currentIndex = index;

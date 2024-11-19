@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:findapet/pages/chat_pages/chats_page.dart';
-import 'package:findapet/pages/main_pages/adoption_page.dart';
-import 'package:findapet/pages/petlost_pages/my_petslost_page.dart';
+import 'package:findapet/pages/main_pages/my_pets.dart';
+import 'package:findapet/pages/petadoption_pages/petadoption_page.dart';
 import 'package:findapet/pages/petlost_pages/petlost_page.dart';
 import '../../controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +26,8 @@ class _HomePageState extends State<HomePage> {
   // Lista de las páginas
   final List<Widget> _pages = [
     PetlostPage(),
-    MyPetsLostPage(),
-    AdoptionPage(),
+    MyPetsPage(),
+    PetAdoptionPage(),
     ChatPages(),
   ];
 
