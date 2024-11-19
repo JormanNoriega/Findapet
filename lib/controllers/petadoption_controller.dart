@@ -2,25 +2,25 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:findapet/controllers/auth_controller.dart';
 import 'package:findapet/models/pet_model.dart';
-import 'package:findapet/services/petlost_service.dart';
+import 'package:findapet/services/petadoption_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
-class petlostController extends GetxController {
-  final PetlostService _petlostService = PetlostService();
+class PetAdoptionController extends GetxController {
+  final PetAdoptionService _petAdoptionService = PetAdoptionService();
 
   var isLoading = false.obs;
   var imageFiles = <File>[].obs;
   var imageWebFiles = <Uint8List>[].obs;
-  RxList<PetLost> petlostList = <PetLost>[].obs;
-  RxList<PetLost> petlostListByOwner = <PetLost>[].obs;
-  var filteredPetlostList = <PetLost>[].obs;
+  RxList<PetAdoption> petAdoptionList = <PetAdoption>[].obs;
+  RxList<PetAdoption> petAdoptionListByOwner = <PetAdoption>[].obs;
+  var filteredPetAdoptionList = <PetAdoption>[].obs;
   var searchQuery = ''.obs;
 
-  //Metodo para seleccionar imagen
-  Future<void> pickPetLostImages(bool fromCamera) async {
+  // Método para seleccionar imágenes
+  Future<void> pickPetAdoptionImages(bool fromCamera) async {
     if (kIsWeb) {
       // Seleccionar imagen en Flutter Web usando FilePicker
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -48,8 +48,8 @@ class petlostController extends GetxController {
     }
   }
 
-  //Metodo para guardar un petLost
-  Future<void> saveNewPetlost(
+  // Método para guardar un petAdoption
+  Future<void> saveNewPetAdoption(
       String name,
       String type,
       String breed,
@@ -57,19 +57,17 @@ class petlostController extends GetxController {
       String description,
       String department,
       String municipality,
-      String lostDate,
-      String location,
-      double? latitude,
-      double? longitude) async {
+      bool isVaccinated,
+      bool isSterilized) async {
     try {
       isLoading.value = true;
       String id = const Uuid().v4(); // Generar un ID único para la mascota
       List<String> imageUrls = [];
 
-      //verificar si hay imagenes seleccionadas
+      // Verificar si hay imágenes seleccionadas
       if (imageFiles.isNotEmpty || imageWebFiles.isNotEmpty) {
         List<String?> uploadedUrls =
-            await _petlostService.uploadImagesForPlatform(
+            await _petAdoptionService.uploadImagesForPlatform(
           kIsWeb ? imageWebFiles : imageFiles,
           id,
         );
@@ -79,8 +77,8 @@ class petlostController extends GetxController {
             uploadedUrls.where((url) => url != null).cast<String>().toList();
       }
 
-      // Crear una instancia de PetLost con todos los datos
-      PetLost petLost = PetLost(
+      // Crear una instancia de PetAdoption con todos los datos
+      PetAdoption petAdoption = PetAdoption(
         id: id,
         name: name,
         type: type,
@@ -88,19 +86,17 @@ class petlostController extends GetxController {
         ownerId: ownerId,
         description: description,
         imageUrls: imageUrls,
-        lostDate: DateTime.parse(lostDate),
-        location: location,
         department: department,
         municipality: municipality,
-        latitude: latitude,
-        longitude: longitude,
+        isVaccinated: isVaccinated,
+        isSterilized: isSterilized,
       );
 
       // Guardar el ítem usando el servicio
-      await _petlostService.savePetlostData(petLost);
-      Get.snackbar('Éxito', 'Publicacion Exitosa');
-      fetchPetLostByOwner();
-      fetchPetLost(); // Volver a cargar los ítems después de guardar
+      await _petAdoptionService.savePetAdoptionData(petAdoption);
+      Get.snackbar('Éxito', 'Publicación Exitosa');
+      fetchPetAdoptionByOwner();
+      fetchPetAdoption(); // Volver a cargar los ítems después de guardar
     } catch (e) {
       Get.snackbar('Error', 'No se pudo guardar la publicación');
     } finally {
@@ -108,25 +104,24 @@ class petlostController extends GetxController {
     }
   }
 
-  //Metodo para obtener todos los petLost
-  void fetchPetLost() {
+  // Método para obtener todos los petAdoption
+  void fetchPetAdoption() {
     isLoading.value = true;
-    _petlostService.getPetlostData().listen((fetchedPetLost) {
-      // Aquí actualizas la lista y aplicas el filtro
-      petlostList.value = fetchedPetLost;
+    _petAdoptionService.getPetAdoptionData().listen((fetchedPetAdoption) {
+      petAdoptionList.value = fetchedPetAdoption;
       applyFilter(); // Asegúrate de que esto no desencadene un rebuild
       isLoading.value = false; // Mueve esto después de aplicar el filtro
     });
   }
 
-  //metodo para obtener los petLost por el id del dueño
-  void fetchPetLostByOwner() {
+  // Método para obtener los petAdoption por el id del dueño
+  void fetchPetAdoptionByOwner() {
     isLoading.value = true;
     String ownerId = Get.find<AuthController>().userModel.value!.uid;
-    _petlostService
-        .getPetlostDataByOwner(ownerId)
-        .then((fetchedPetLostbyOwner) {
-      petlostListByOwner.value = fetchedPetLostbyOwner;
+    _petAdoptionService
+        .getPetAdoptionDataByOwner(ownerId)
+        .then((fetchedPetAdoptionByOwner) {
+      petAdoptionListByOwner.value = fetchedPetAdoptionByOwner;
       isLoading.value = false;
     });
   }
@@ -134,12 +129,10 @@ class petlostController extends GetxController {
   // Método para aplicar el filtro basado en el texto de búsqueda
   void applyFilter() {
     if (searchQuery.value.isEmpty) {
-      // Si no hay búsqueda, mostrar todos los ítems
-      filteredPetlostList.value = petlostList;
+      filteredPetAdoptionList.value = petAdoptionList;
     } else {
-      // Filtrar los ítems según el texto de búsqueda
-      filteredPetlostList.value = petlostList.where((petLost) {
-        return petLost.name
+      filteredPetAdoptionList.value = petAdoptionList.where((petAdoption) {
+        return petAdoption.name
             .toLowerCase()
             .contains(searchQuery.value.toLowerCase());
       }).toList();
@@ -152,36 +145,36 @@ class petlostController extends GetxController {
     applyFilter(); // Aplicar el filtro cada vez que se actualice el texto de búsqueda
   }
 
-  // Método para obtener un petlost por su ID
-  Future<PetLost?> getItemPetLostById(String id) async {
+  // Método para obtener un petAdoption por su ID
+  Future<PetAdoption?> getItemPetAdoptionById(String id) async {
     try {
-      return await _petlostService.getPetLostById(id);
+      return await _petAdoptionService.getPetAdoptionById(id);
     } catch (e) {
       Get.snackbar('Error', 'Ocurrió un error al buscar la mascota');
       return null;
     }
   }
 
-  //Metodo para actualizar un petLost
-  Future<void> updatePetLost(PetLost petlost) async {
+  // Método para actualizar un petAdoption
+  Future<void> updatePetAdoption(PetAdoption petAdoption) async {
     try {
       isLoading.value = true;
-      List<String> imageUrls = List.from(petlost.imageUrls);
+      List<String> imageUrls = List.from(petAdoption.imageUrls);
       // Verificar si hay nuevas imágenes seleccionadas
       if (imageFiles.isNotEmpty || imageWebFiles.isNotEmpty) {
         List<String?> uploadedUrls =
-            await _petlostService.uploadImagesForPlatform(
+            await _petAdoptionService.uploadImagesForPlatform(
           kIsWeb ? imageWebFiles : imageFiles,
-          petlost.id,
+          petAdoption.id,
         );
         // Filtrar URLs no nulas y añadirlas a las URLs existentes
         imageUrls.addAll(
             uploadedUrls.where((url) => url != null).cast<String>().toList());
       }
-      // Actualizar los datos del petlost en Firestore
-      await _petlostService.updatePetlostData(petlost);
+      // Actualizar los datos del petAdoption en Firestore
+      await _petAdoptionService.updatePetAdoptionData(petAdoption);
       Get.snackbar('Éxito', 'Mascota actualizada correctamente');
-      fetchPetLost(); // Volver a cargar los petlost después de actualizar
+      fetchPetAdoption(); // Volver a cargar los petAdoption después de actualizar
     } catch (e) {
       Get.snackbar('Error', 'Ocurrió un error al actualizar la Mascota');
     } finally {
@@ -189,14 +182,14 @@ class petlostController extends GetxController {
     }
   }
 
-  //Metodo para eliminar un petLost
-  Future<void> deletePetLost(PetLost petlost) async {
+  // Método para eliminar un petAdoption
+  Future<void> deletePetAdoption(PetAdoption petAdoption) async {
     try {
       isLoading.value = true;
-      await _petlostService.deletePetlostData(petlost.id);
-      Get.snackbar('Éxito', 'Mascota eliminado correctamente');
-      fetchPetLost();
-      fetchPetLostByOwner();
+      await _petAdoptionService.deletePetAdoptionData(petAdoption.id);
+      Get.snackbar('Éxito', 'Mascota eliminada correctamente');
+      fetchPetAdoption();
+      fetchPetAdoptionByOwner();
     } catch (e) {
       Get.snackbar('Error', 'Ocurrió un error al eliminar la Mascota');
     } finally {

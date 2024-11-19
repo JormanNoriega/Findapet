@@ -1,13 +1,14 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'package:findapet/controllers/auth_controller.dart';
 import 'package:findapet/models/pet_model.dart';
 import 'package:findapet/pages/widgets/custom_buttom.dart';
 import 'package:findapet/pages/widgets/custom_dropdown.dart';
 import 'package:findapet/pages/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:findapet/controllers/petlost_controller.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -25,10 +26,11 @@ class _AddPetlostState extends State<AddPetlost> {
   final TextEditingController _breedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-
+  //late GoogleMapController mapController;
   DateTime? selectedDate;
-
-  PetLost? currentPetlost; // Mascota perdida actual
+  LatLng? _selectedLocation;
+  LatLng _initialPosition = const LatLng(4.5709, -74.2973);
+  PetLost? currentPetlost;
   // Lista de tipos de mascotas más comunes
   List<String> petTypes = ['Perro', 'Gato', 'Ave', 'Conejo', 'Reptil', 'Otro'];
 
@@ -43,6 +45,8 @@ class _AddPetlostState extends State<AddPetlost> {
       currentPetlost = Get.arguments
           as PetLost; // Obtener la mascota pasado a través de Get.arguments
       _loadPetData();
+    } else {
+      _getCurrentLocation();
     }
   }
 
@@ -52,13 +56,47 @@ class _AddPetlostState extends State<AddPetlost> {
     _descriptionController.text = currentPetlost!.description;
     _locationController.text = currentPetlost!.location;
     selectedDate = currentPetlost!.lostDate;
-
+    _selectedLocation =
+        LatLng(currentPetlost!.latitude!, currentPetlost!.longitude!);
+    _initialPosition = _selectedLocation!;
     // Si estamos editando una mascota perdida, llenamos el tipo de mascota
     selectedPetType = currentPetlost!.type;
+    _selectedLocation =
+        LatLng(currentPetlost!.latitude!, currentPetlost!.longitude!);
 
     if (currentPetlost!.imageUrls.isNotEmpty) {
       _petlostController.imageFiles.value = [];
     }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Verificar que los servicios de ubicación están habilitados
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return Future.error('Los servicios de ubicación están deshabilitados.');
+    }
+
+    // Verificar y solicitar permisos
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Permiso de ubicación denegado.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Permiso de ubicación permanentemente denegado.');
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
   }
 
   // Método para mostrar el diálogo de selección de imagen
@@ -111,6 +149,7 @@ class _AddPetlostState extends State<AddPetlost> {
       appBar: AppBar(
         title:
             Text(currentPetlost == null ? 'Agregar Mascota' : 'Editar Mascota'),
+        backgroundColor: const Color(0xFFF0F440),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -257,76 +296,133 @@ class _AddPetlostState extends State<AddPetlost> {
                 ],
               ),
               SizedBox(height: 20),
+              _buildMapWidget(),
+              SizedBox(height: 25),
               Obx(() {
                 return _petlostController.isLoading.value
                     ? CircularProgressIndicator()
                     : CustomButton(
                         onPressed: () {
-                          final name = _nameController.text;
-                          final breed = _breedController.text;
-                          final description = _descriptionController.text;
-                          final location = _locationController.text;
-                          final department =
-                              _authController.userModel.value!.department;
-                          final municipality =
-                              _authController.userModel.value!.municipality;
-
-                          if (selectedDate == null) {
-                            Get.snackbar('Error',
-                                'Debe seleccionar una fecha de pérdida');
-                            return;
-                          }
-
-                          if (selectedPetType == null) {
-                            Get.snackbar(
-                                'Error', 'Debe seleccionar un tipo de mascota');
-                            return;
-                          }
-
-                          if (_petlostController.imageFiles.isEmpty &&
-                              (currentPetlost == null ||
-                                  currentPetlost!.imageUrls.isEmpty)) {
-                            Get.snackbar('Error',
-                                'Debe seleccionar al menos una imagen');
-                            return;
-                          }
-
-                          final ownerId = _authController.userModel.value!.uid;
-
-                          if (currentPetlost == null) {
-                            _petlostController.saveNewPetlost(
-                              name,
-                              selectedPetType!,
-                              breed,
-                              ownerId,
-                              description,
-                              department,
-                              municipality,
-                              selectedDate.toString(),
-                              location,
-                              '0', // Latitud
-                              '0', // Longitud
-                            );
-                          } else {
-                            currentPetlost!.name = name;
-                            currentPetlost!.type = selectedPetType!;
-                            currentPetlost!.breed = breed;
-                            currentPetlost!.description = description;
-                            currentPetlost!.location = location;
-                            currentPetlost!.ownerId = ownerId;
-                            currentPetlost!.department =
-                                _authController.userModel.value!.department;
-                            currentPetlost!.municipality =
-                                _authController.userModel.value!.municipality;
-                            currentPetlost!.lostDate = selectedDate;
-                            _petlostController.updatePetLost(currentPetlost!);
-                          }
+                          _handleSaveOrUpdate();
                         },
                         buttonText:
                             currentPetlost == null ? "Agregar" : "Actualizar",
                       );
               }),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleSaveOrUpdate() {
+    final name = _nameController.text;
+    final breed = _breedController.text;
+    final description = _descriptionController.text;
+    final location = _locationController.text;
+    final department = _authController.userModel.value!.department;
+    final municipality = _authController.userModel.value!.municipality;
+
+    if (selectedDate == null) {
+      Get.snackbar('Error', 'Debe seleccionar una fecha de pérdida');
+      return;
+    }
+
+    if (selectedPetType == null) {
+      Get.snackbar('Error', 'Debe seleccionar un tipo de mascota');
+      return;
+    }
+
+    if (_petlostController.imageFiles.isEmpty &&
+        (currentPetlost == null || currentPetlost!.imageUrls.isEmpty)) {
+      Get.snackbar('Error', 'Debe seleccionar al menos una imagen');
+      return;
+    }
+
+    if (_selectedLocation == null) {
+      Get.snackbar('Error', 'Debe seleccionar una ubicación en el mapa');
+      return;
+    }
+
+    final ownerId = _authController.userModel.value!.uid;
+
+    if (currentPetlost == null) {
+      _petlostController.saveNewPetlost(
+        name,
+        selectedPetType!,
+        breed,
+        ownerId,
+        description,
+        department,
+        municipality,
+        selectedDate.toString(),
+        location,
+        _selectedLocation!.latitude, // Latitud
+        _selectedLocation!.longitude, // Longitud
+      );
+    } else {
+      currentPetlost!.name = name;
+      currentPetlost!.type = selectedPetType!;
+      currentPetlost!.breed = breed;
+      currentPetlost!.description = description;
+      currentPetlost!.location = location;
+      currentPetlost!.ownerId = ownerId;
+      currentPetlost!.department = _authController.userModel.value!.department;
+      currentPetlost!.municipality =
+          _authController.userModel.value!.municipality;
+      currentPetlost!.lostDate = selectedDate;
+      currentPetlost!.latitude = _selectedLocation!.latitude;
+      currentPetlost!.longitude = _selectedLocation!.longitude;
+      _petlostController.updatePetLost(currentPetlost!);
+    }
+  }
+
+  Widget _buildMapWidget() {
+    return SizedBox(
+      height: 300,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.blue, // Color del borde
+            width: 1, // Grosor del borde
+          ),
+          borderRadius: BorderRadius.circular(15), // Bordes redondeados
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(
+              15), // Asegura el redondeado dentro del borde
+          child: GoogleMap(
+            myLocationEnabled: true,
+            scrollGesturesEnabled: true, // Permite mover el mapa
+            zoomGesturesEnabled: true,
+            onMapCreated: (controller) {
+              controller.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: _initialPosition,
+                    zoom: 15,
+                  ),
+                ),
+              );
+            },
+            onTap: (position) {
+              setState(() {
+                _selectedLocation = position;
+              });
+            },
+            initialCameraPosition: CameraPosition(
+              target: _initialPosition,
+              zoom: 12,
+            ),
+            markers: _selectedLocation != null
+                ? {
+                    Marker(
+                      markerId: const MarkerId('selected_location'),
+                      position: _selectedLocation!,
+                    ),
+                  }
+                : {},
           ),
         ),
       ),

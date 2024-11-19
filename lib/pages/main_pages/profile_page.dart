@@ -227,6 +227,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Perfil'),
+        backgroundColor: const Color(0xFFF0F440),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

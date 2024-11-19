@@ -50,6 +50,8 @@ dependencies:
   carousel_slider: ^5.0.0
   http:
   qr_flutter:
+  geolocator: ^13.0.1
+  google_maps_flutter: ^2.9.0
 
 dev_dependencies:
   flutter_test:
